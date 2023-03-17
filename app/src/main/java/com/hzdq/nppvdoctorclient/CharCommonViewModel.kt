@@ -29,9 +29,6 @@ class CharCommonViewModel: ViewModel() {
     private var shp : Shp? = null
     private var retrofitSingleton:RetrofitSingleton? = null
 
-
-
-
     private val timeChangeReceiver: TimeChangeReceiver? = null
 
     val intentFilter = IntentFilter()
