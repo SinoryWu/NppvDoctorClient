@@ -20,7 +20,7 @@ import retrofit2.Response
 /**
  *Time:2023/3/17
  *Author:Sinory
- *Description:共用viewmodel
+ *Description:通用viewmodel
  */
 class CharCommonViewModel: ViewModel() {
     private val TAG = "CharCommonViewModel"
