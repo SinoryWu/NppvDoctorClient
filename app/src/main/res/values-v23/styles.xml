@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorBase</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!--        设置称为透明，屏蔽掉windows的白色背景-->
+        <!--        <item name="android:windowIsTranslucent">true</item>-->
+        <!--        <item name="android:windowNoTitle">true</item>-->
+        <!--        <item name="android:windowBackground">@mipmap/backwindow</item>-->
+        <item name="android:windowNoTitle">true</item>
+        <!--        注意：当界面加载完成后 我们需要将背景图片删除（或者设置其他颜色）-->
+
+    </style>
+</resources>

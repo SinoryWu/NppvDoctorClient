@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="305dp"
+        android:layout_height="46dp">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            tools:src="@mipmap/mine_modify_password" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="修改密码"
+            android:textColor="#ff000000"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="43dp" />
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="版本 1.0.0"
+            android:textColor="#ffbbbbbb"
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="221dp" />
+
+        <ImageView
+            android:layout_width="9dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="298dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/mine_right_arrow" />
+
+    </RelativeLayout>
+</layout>

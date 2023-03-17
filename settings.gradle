@@ -1,0 +1,2 @@
+rootProject.name = "NPPVDoctorClient"
+include ':app'

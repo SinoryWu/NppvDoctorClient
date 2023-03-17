@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="151dp"
+        tools:context=".login.fragment.VerificationCodeFragment">
+
+
+        <include
+            android:id="@+id/phone"
+            layout="@layout/layout_login_edit"
+            android:layout_width="295dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="33dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/login_edit_bg"
+
+            app:layout_constraintEnd_toEndOf="@+id/phone"
+            app:layout_constraintStart_toStartOf="@+id/phone"
+            app:layout_constraintTop_toBottomOf="@+id/phone">
+
+            <Button
+                android:id="@+id/get_code"
+                android:layout_width="118dp"
+                android:layout_height="0dp"
+                android:background="@drawable/login_get_code_bg"
+                android:text="获取验证码"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <EditText
+                android:id="@+id/edit"
+                android:layout_width="140dp"
+                android:layout_height="0dp"
+                android:background="@null"
+                android:hint="验证码"
+                android:inputType="number"
+                android:maxLength="6"
+                android:singleLine="true"
+                android:textColor="#666666"
+                android:textColorHint="#E7E4E9"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/get_code"
+                app:layout_constraintEnd_toStartOf="@+id/get_code"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/edit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/icon_login_verification_code" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

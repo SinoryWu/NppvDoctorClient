@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        tools:context=".mine.AboutActivity">
+
+        <include
+            android:id="@+id/head"
+            layout="@layout/layout_navigation_head"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="111dp"
+            android:layout_height="109dp"
+            android:layout_marginTop="78dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/icon_bajiesleep" />
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            tools:text="Version 1.0.0"
+            android:textColor="#ff241332"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageView7"
+            app:layout_constraintHorizontal_bias="0.48"
+            app:layout_constraintStart_toStartOf="@+id/imageView7"
+            app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+        <TextView
+            android:id="@+id/textView26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="29dp"
+            android:text="八戒睡眠 版权所有 "
+            android:textColor="#ffb4b4b4"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/private_link"
+            android:layout_width="wrap_content"
+            android:layout_height="23dp"
+            android:layout_marginTop="212dp"
+            android:text="《隐私声明》"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textColor="#ffe693ef"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/user_link"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/user_link"
+            android:layout_width="wrap_content"
+            android:layout_height="23dp"
+            android:layout_marginBottom="7dp"
+            android:visibility="gone"
+            android:text="《用户协议》"
+            android:gravity="center"
+            android:textColor="#ffe693ef"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/textView26"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <include
+            android:id="@+id/version_update"
+            layout="@layout/layout_score"
+            android:layout_width="252dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="52dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+        <include
+            android:id="@+id/cancellation"
+            layout="@layout/layout_score"
+            android:layout_width="252dp"
+            android:layout_height="42dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/version_update" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/item_chat_time"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:textColor="#ff888888"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="14:30" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_chat_from"
+        android:visibility="gone"
+        android:layout_width="285dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_chat_time">
+
+        <ImageView
+            android:id="@+id/item_chat_from_head"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@mipmap/chat_patient_icon" />
+
+        <TextView
+            android:id="@+id/item_chat_from_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="11dp"
+            android:textColor="#ff000000"
+            android:textSize="12sp"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@+id/item_chat_from_head"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="王二叁" />
+
+        <TextView
+            android:id="@+id/item_chat_from_type"
+            android:layout_width="20dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="1dp"
+            android:layout_toRightOf="@+id/item_chat_from_name"
+            android:textColor="#ff888888"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/item_chat_from_name"
+            app:layout_constraintStart_toEndOf="@+id/item_chat_from_name"
+            app:layout_constraintTop_toTopOf="@+id/item_chat_from_name"
+            tools:text="医助" />
+
+        <FrameLayout
+
+            android:id="@+id/item_chat_from_content_layout"
+            android:layout_width="234dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/chat_from_bg"
+            app:layout_constraintStart_toEndOf="@+id/item_chat_from_head"
+            app:layout_constraintTop_toBottomOf="@+id/item_chat_from_name">
+
+            <TextView
+                android:id="@+id/item_chat_from_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="9dp"
+                android:layout_marginBottom="8dp"
+                android:text="早上好啊，我的压力滴定报告出来了吗？"
+                android:textColor="#ff000000"
+                android:textSize="12sp" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_chat_to"
+        android:layout_width="285dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:visibility="visible"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_chat_time"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/item_chat_to_head"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@mipmap/chat_bajie_icon" />
+
+
+        <TextView
+            android:id="@+id/item_chat_to_head_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="11dp"
+            android:textColor="#ff888888"
+            android:textSize="10sp"
+            android:layout_marginTop="1dp"
+            app:layout_constraintEnd_toStartOf="@+id/item_chat_to_head"
+
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="医助" />
+
+        <TextView
+            android:id="@+id/item_chat_to_head_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="张三"
+            android:textColor="#ff000000"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/item_chat_to_head_type"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/item_chat_to_layout"
+            android:layout_width="234dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="11dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/chat_to_bg"
+            app:layout_constraintEnd_toStartOf="@+id/item_chat_to_head"
+            app:layout_constraintTop_toBottomOf="@+id/item_chat_to_head_name">
+
+            <TextView
+                android:id="@+id/item_chat_to_content"
+                android:layout_width="216dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="9dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="#ffffffff"
+                android:textSize="12sp"
+                tools:text="患者的夜间血氧得到良好改善，夜间平均血氧饱和度从94.7%改善到97%（正常值≥95%），最低血氧饱和度从78%改善到92%（正常值≥90%），氧减指数改善到3.7（正常值＜5）；患者的AHI从42.8改善到15以内。NPPV治疗有效的治疗了患者的OSA及夜间低氧血症，需要继续进行NPPV治疗，治疗处方可做适当调整，目标在1个月内将AHI控制到10以内。" />
+        </FrameLayout>
+
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

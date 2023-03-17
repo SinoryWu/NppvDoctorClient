@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".chat.AddDoctorActivity">
+
+        <include
+            android:id="@+id/head"
+            layout="@layout/layout_navigation_head"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="63dp"
+            android:background="#ffffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/head">
+
+            <EditText
+                android:id="@+id/search"
+                android:layout_width="335dp"
+                android:layout_height="34dp"
+                android:layout_gravity="center"
+                android:background="@drawable/chat_search_edit_bg"
+                android:drawableStart="@mipmap/icon_search"
+                android:drawablePadding="11dp"
+                android:hint="医生/医助姓名搜索"
+                android:imeOptions="actionSearch"
+                android:maxLines="1"
+                android:paddingStart="11dp"
+                android:paddingEnd="11dp"
+                android:singleLine="true"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/head" />
+        </FrameLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/confirm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+
+        <Button
+            android:id="@+id/confirm"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/add_doctor_btn_bg"
+            android:enabled="false"
+            android:text="完成"
+            android:textColor="#ffb7b7b7"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.hzdq.nppvdoctorclient.view.SideBar
+            android:id="@+id/sideBar"
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/confirm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+        <TextView
+            android:id="@+id/word"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="254dp"
+            android:layout_marginBottom="317dp"
+            android:background="@drawable/select_word_bg"
+            android:gravity="center"
+            android:text="A"
+            android:textColor="#000000"
+            android:textSize="25sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/confirm"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

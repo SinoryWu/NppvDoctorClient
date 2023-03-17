@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:id="@+id/item_add_doctor_word_layout"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:visibility="gone"
+        android:background="#E7E7E7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/item_add_doctor_word"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="25dp"
+            android:maxLines="1"
+            android:textColor="#ff000000"
+            android:textSize="14sp"
+            tools:text="A" />
+    </FrameLayout>
+
+    <CheckBox
+        android:id="@+id/item_add_doctor_checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="25dp"
+        android:button="@drawable/add_doctor_check_button"
+        android:textColor="#666666"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_add_doctor_word_layout" />
+
+    <ImageView
+        android:id="@+id/item_add_doctor_head"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="7dp"
+        android:layout_marginStart="67dp"
+        android:layout_marginBottom="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_add_doctor_word_layout"
+        android:src="@mipmap/group_bajie_icon" />
+
+    <TextView
+        android:id="@+id/item_add_doctor_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxEms="4"
+        android:maxLines="1"
+        android:textColor="#ff000000"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/item_add_doctor_head"
+        app:layout_constraintStart_toEndOf="@+id/item_add_doctor_head"
+        app:layout_constraintTop_toTopOf="@+id/item_add_doctor_head"
+        tools:text="王王" />
+
+    <TextView
+        android:id="@+id/item_group_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="165dp"
+        android:layout_gravity="center_vertical"
+        android:textColor="#ff888888"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/item_add_doctor_head"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/item_add_doctor_head"
+        tools:text="医生" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:background="#E7E7E7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

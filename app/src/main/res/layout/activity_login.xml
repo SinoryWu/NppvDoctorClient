@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        tools:context=".login.LoginActivity">
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="0dp"
+            android:layout_height="188dp"
+            android:background="@drawable/login_head_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="83dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="44dp"
+            android:src="@mipmap/login_bajie_head"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_marginTop="602dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="ver0.1.0"
+            android:textColor="#ff888888"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="295dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="469dp"
+            android:background="@drawable/login_btn_bg"
+            android:text="登录"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginBottom="93dp"
+            android:button="@drawable/login_check_button"
+            android:paddingStart="4dp"
+            android:text="已阅读并同意"
+            android:textColor="#666666"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/button"
+            app:layout_constraintStart_toStartOf="@+id/button" />
+
+        <TextView
+            android:id="@+id/privacy_statement"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="《隐私声明》"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="#1FBE99"
+            app:layout_constraintBottom_toBottomOf="@+id/checkBox"
+            app:layout_constraintStart_toEndOf="@+id/checkBox"
+            app:layout_constraintTop_toTopOf="@+id/checkBox" />
+
+
+        <TextView
+            android:id="@+id/user_agreement"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="《用户协议》"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="#1FBE99"
+            app:layout_constraintBottom_toBottomOf="@+id/checkBox"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/checkBox" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="与"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            app:layout_constraintBottom_toBottomOf="@+id/checkBox"
+            app:layout_constraintStart_toEndOf="@+id/privacy_statement"
+            app:layout_constraintTop_toTopOf="@+id/checkBox" />
+
+        <TextView
+            android:id="@+id/password_or_code"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:gravity="center"
+            android:text="使用密码登录"
+            android:textColor="#1FBE99"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/button"
+            app:layout_constraintTop_toBottomOf="@+id/button" />
+
+        <fragment
+            android:id="@+id/login_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="1dp"
+            app:defaultNavHost="true"
+            app:layout_constraintBottom_toTopOf="@+id/checkBox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            app:navGraph="@navigation/login_navigation" />
+
+
+        <include
+            android:id="@+id/network_timeout"
+            layout="@layout/layout_network_timeout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
