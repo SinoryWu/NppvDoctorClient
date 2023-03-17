@@ -23,7 +23,7 @@ import retrofit2.Response
  *Description:通用viewmodel
  */
 class CharCommonViewModel: ViewModel() {
-    private val TAG = "CharCommonViewModel"
+    private val TAG = "ChartCommonViewModel"
     private  val SCAN_PERIOD: Long = 10
     var ctx:Context? = null
     private var shp : Shp? = null
