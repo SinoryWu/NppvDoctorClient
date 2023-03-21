@@ -82,6 +82,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         shp.saveToSpBoolean("firstLogin",false)
                         response.body()?.data?.token?.let { shp.saveToSp("token", it) }
                         response.body()?.data?.uid?.let { shp.saveToSpInt("uid", it) }
+                        response.body()?.data?.roleType?.let { shp.saveToSpInt("roleType", it) }
 
                         shp.saveToSpBoolean("firstLogin",false)
                         loginCode.value =  1

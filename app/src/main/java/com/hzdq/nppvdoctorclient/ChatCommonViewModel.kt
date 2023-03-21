@@ -5,9 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.paging.toLiveData
+import com.hzdq.nppvdoctorclient.chat.paging.ImConversationListDataSourceFactory
+import com.hzdq.nppvdoctorclient.chat.paging.ImMessageListDataSourceFactory
 import com.hzdq.nppvdoctorclient.dataclass.DataClassImAppInfo
 import com.hzdq.nppvdoctorclient.dataclass.DataClassUserImToken
 import com.hzdq.nppvdoctorclient.retrofit.RetrofitSingleton
@@ -22,7 +25,7 @@ import retrofit2.Response
  *Author:Sinory
  *Description:通用viewmodel
  */
-class CharCommonViewModel: ViewModel() {
+class ChatCommonViewModel: ViewModel() {
     private val TAG = "ChartCommonViewModel"
     private  val SCAN_PERIOD: Long = 10
     var ctx:Context? = null
@@ -135,15 +138,15 @@ class CharCommonViewModel: ViewModel() {
 
 
         val timeChangeReceiver = TimeChangeReceiver(shp!!,this)
-        ctx!!.registerReceiver(timeChangeReceiver, intentFilter)
+        ctx?.registerReceiver(timeChangeReceiver, intentFilter)
     }
 
     fun unregisterTimeChange(){
-        ctx!!.unregisterReceiver(timeChangeReceiver)
+        ctx?.unregisterReceiver(timeChangeReceiver)
     }
 
 
-    internal class TimeChangeReceiver(val shp: Shp,val charCommonViewModel: CharCommonViewModel) : BroadcastReceiver() {
+    internal class TimeChangeReceiver(val shp: Shp,val chatCommonViewModel: ChatCommonViewModel) : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
@@ -151,7 +154,7 @@ class CharCommonViewModel: ViewModel() {
                     //每过一分钟 触发
                     if (System.currentTimeMillis() - shp.getTokenTimeMillis()!! > 1739000){
                         Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:请求一次")
-                        charCommonViewModel.getImToken()
+                        chatCommonViewModel.getImToken()
                     }
                     Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:${System.currentTimeMillis()}")
                 }
@@ -164,5 +167,8 @@ class CharCommonViewModel: ViewModel() {
             }
         }
     }
+
+
+
 
 }

@@ -20,7 +20,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/item_chat_from"
         android:visibility="gone"
-        android:layout_width="285dp"
+        android:layout_width="wrap_content"
+        android:maxWidth="285dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="24dp"
@@ -37,7 +38,7 @@
             android:layout_height="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@mipmap/chat_patient_icon" />
+            android:src="@mipmap/chat_patient_icon" />
 
         <TextView
             android:id="@+id/item_chat_from_name"
@@ -68,7 +69,8 @@
         <FrameLayout
 
             android:id="@+id/item_chat_from_content_layout"
-            android:layout_width="234dp"
+            android:layout_width="wrap_content"
+            android:maxWidth="234dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
             android:layout_marginTop="5dp"
@@ -79,12 +81,13 @@
             <TextView
                 android:id="@+id/item_chat_from_content"
                 android:layout_width="wrap_content"
+                android:maxWidth="216dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="9dp"
                 android:layout_marginBottom="8dp"
-                android:text="早上好啊，我的压力滴定报告出来了吗？"
+                tools:text="早上好啊，我的压力滴定报告出来了吗"
                 android:textColor="#ff000000"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -92,10 +95,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/item_chat_to"
-        android:layout_width="285dp"
+
+        android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,11 +113,11 @@
             android:layout_height="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@mipmap/chat_bajie_icon" />
+            android:src="@mipmap/chat_bajie_icon" />
 
 
         <TextView
-            android:id="@+id/item_chat_to_head_type"
+            android:id="@+id/item_chat_to_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="11dp"
@@ -125,28 +130,31 @@
             tools:text="医助" />
 
         <TextView
-            android:id="@+id/item_chat_to_head_name"
+            android:id="@+id/item_chat_to_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="张三"
+
             android:textColor="#ff000000"
             android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/item_chat_to_head_type"
+            app:layout_constraintEnd_toStartOf="@+id/item_chat_to_type"
             app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:id="@+id/item_chat_to_layout"
-            android:layout_width="234dp"
+            android:layout_width="wrap_content"
+            android:maxWidth="234dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="11dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/chat_to_bg"
             app:layout_constraintEnd_toStartOf="@+id/item_chat_to_head"
-            app:layout_constraintTop_toBottomOf="@+id/item_chat_to_head_name">
+            app:layout_constraintTop_toBottomOf="@+id/item_chat_to_name">
 
             <TextView
                 android:id="@+id/item_chat_to_content"
-                android:layout_width="216dp"
+                android:layout_width="wrap_content"
+                android:maxWidth="216dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="8dp"

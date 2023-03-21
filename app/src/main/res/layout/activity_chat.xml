@@ -1,97 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F7F7F7"
-    tools:context=".chat.ChatActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <include
-        android:id="@+id/head"
-        layout="@layout/layout_navigation_head"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F7F7F7"
+        tools:context=".chat.ChatActivity">
+
+        <include
+            android:id="@+id/head"
+            layout="@layout/layout_navigation_head"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:background="#ffffff"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="#ffffff"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <FrameLayout
-            android:id="@+id/send_img"
-            android:layout_width="41dp"
-            android:layout_height="37dp"
-            android:layout_marginStart="4dp">
+            <FrameLayout
+                android:id="@+id/send_img"
+                android:layout_width="41dp"
+                android:layout_height="37dp"
+                android:layout_marginStart="4dp">
 
-            <ImageView
-                android:layout_width="21dp"
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/send_img" />
+            </FrameLayout>
+
+            <View
+                android:layout_width="1dp"
                 android:layout_height="17dp"
-                android:layout_gravity="center"
-                android:src="@mipmap/send_img" />
-        </FrameLayout>
+                android:layout_marginStart="4dp"
+                android:background="#D5D2D2" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="17dp"
-            android:layout_marginStart="4dp"
-            android:background="#D5D2D2" />
+            <EditText
+                android:id="@+id/edit"
+                android:layout_width="244dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:background="@null"
+                android:hint="请输入信息"
+                android:textColor="#000000"
+                android:textColorHint="#D5D2D2"
+                android:textSize="12sp" />
 
-        <EditText
-            android:id="@+id/edit"
-            android:layout_width="244dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            android:background="@null"
-            android:hint="请输入信息"
-            android:textColor="#000000"
-            android:textColorHint="#D5D2D2"
-            android:textSize="12sp" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="17dp"
-            android:layout_marginStart="14dp"
-            android:background="#D5D2D2" />
-
-        <FrameLayout
-            android:id="@+id/send_msg"
-            android:layout_width="41dp"
-            android:layout_height="37dp"
-            android:layout_marginStart="4dp">
-
-            <ImageView
-                android:layout_width="21dp"
+            <View
+                android:layout_width="1dp"
                 android:layout_height="17dp"
-                android:layout_gravity="center"
-                android:src="@mipmap/send_msg" />
-        </FrameLayout>
-    </LinearLayout>
+                android:layout_marginStart="14dp"
+                android:background="#D5D2D2" />
+
+            <FrameLayout
+                android:id="@+id/send_msg"
+                android:layout_width="41dp"
+                android:layout_height="37dp"
+                android:layout_marginStart="4dp">
+
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/send_msg" />
+            </FrameLayout>
+        </LinearLayout>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView3"
-        android:layout_width="0dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
 
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/head"
-        app:layout_constraintVertical_bias="0.0" />
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@+id/head"
+            app:layout_constraintVertical_bias="0.0" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

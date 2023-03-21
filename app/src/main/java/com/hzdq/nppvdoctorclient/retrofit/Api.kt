@@ -1,11 +1,10 @@
 package com.hzdq.nppvdoctorclient.retrofit
 
+import com.hzdq.nppvdoctorclient.body.BodyImConversationList
+import com.hzdq.nppvdoctorclient.body.BodyImMessageList
 import com.hzdq.nppvdoctorclient.body.BodyLoginPassword
 import com.hzdq.nppvdoctorclient.body.BodyLoginVerificationCode
-import com.hzdq.nppvdoctorclient.dataclass.DataClassGeneralBoolean
-import com.hzdq.nppvdoctorclient.dataclass.DataClassImAppInfo
-import com.hzdq.nppvdoctorclient.dataclass.DataClassLogin
-import com.hzdq.nppvdoctorclient.dataclass.DataClassUserImToken
+import com.hzdq.nppvdoctorclient.dataclass.*
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -27,5 +26,10 @@ interface Api {
     //获取当前用户回话token
     @GET("/hx_app/doctor/app/im/loadUserImToken")
     fun getUserImToken():Call<DataClassUserImToken>
-
+    //获取对话列表
+    @POST("/hx_app/doctor/app/im/imConversationList")
+    fun getImConversationList(@Body bodyImConversationList: BodyImConversationList):Call<DataClassImConversationList>
+    //获取消息列表
+    @POST("/hx_app/doctor/app/im/imMessageList")
+    fun getImMessageList(@Body bodyImMessageList: BodyImMessageList):Call<DataClassImMessageList>
 }

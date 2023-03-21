@@ -1,7 +1,6 @@
 package com.hzdq.nppvdoctorclient
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.hzdq.nppvdoctorclient.CharCommonViewModel.TimeChangeReceiver
 import com.hzdq.nppvdoctorclient.chat.ChatViewModel
 import com.hzdq.nppvdoctorclient.databinding.ActivityMainBinding
 import com.hzdq.nppvdoctorclient.fragment.*
@@ -41,13 +39,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mineViewModel: MineViewModel
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var mainViewModel: MainViewModel
-    private val vm: CharCommonViewModel by shareViewModels("sinory")
+    private val vm: ChatCommonViewModel by shareViewModels("sinory")
     private var destinationMap:Map<Fragment, MotionLayout>? = null
     private var tokenDialogUtil:TokenDialogUtil? = null
     private val TAG = "MainActivity"
 
     override fun onDestroy() {
-        vm.unregisterTimeChange()
+        if (!shp.getToken().equals("")){
+            vm.unregisterTimeChange()
+        }
+
         tokenDialogUtil?.disMissTokenDialog()
         ActivityCollector.removeActivity(this)
         super.onDestroy()
@@ -67,39 +68,62 @@ class MainActivity : AppCompatActivity() {
         mineViewModel = ViewModelProvider(this).get(MineViewModel::class.java)
         chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        if (shp.getRoleType() != 2){
+            binding.doctorIcon.motion.visibility = View.GONE
+        }
 
         if (savedInstanceState != null){
             serviceFragment = supportFragmentManager.getFragment(savedInstanceState, "ServiceFragment")!!
             patientFragment = supportFragmentManager.getFragment(savedInstanceState, "PatientFragment")!!
-            doctorFragment = supportFragmentManager.getFragment(savedInstanceState, "DoctorFragment")!!
+            if (shp.getRoleType() == 2){
+                doctorFragment = supportFragmentManager.getFragment(savedInstanceState, "DoctorFragment")!!
+            }
             chatFragment = supportFragmentManager.getFragment(savedInstanceState, "ChatFragment")!!
+
             mineFragment = supportFragmentManager.getFragment(savedInstanceState, "MineFragment")!!
             addToList(serviceFragment)
             addToList(patientFragment)
-            addToList(doctorFragment)
+
+            if (shp.getRoleType() == 2){
+                addToList(doctorFragment)
+
+            }
             addToList(chatFragment)
             addToList(mineFragment)
         } else {
             initFragment()
         }
 
-        destinationMap = mapOf(
-            serviceFragment to binding.serviceIcon.motion,
-            patientFragment to binding.patientIcon.motion,
-            doctorFragment  to binding.doctorIcon.motion,
-            chatFragment to binding.chatIcon.motion,
-            mineFragment to binding.mineIcon.motion,
-        )
+        if (shp.getRoleType() == 2){
+            destinationMap = mapOf(
+                serviceFragment to binding.serviceIcon.motion,
+                patientFragment to binding.patientIcon.motion,
+                doctorFragment  to binding.doctorIcon.motion,
+                chatFragment to binding.chatIcon.motion,
+                mineFragment to binding.mineIcon.motion,
+            )
+        }else {
+            destinationMap = mapOf(
+                serviceFragment to binding.serviceIcon.motion,
+                patientFragment to binding.patientIcon.motion,
+                chatFragment to binding.chatIcon.motion,
+                mineFragment to binding.mineIcon.motion,
+            )
+        }
+
 
         initView()
 
         logOut()
         observer()
 
-//        vm.getImAppInfo()
-//        vm.getImToken()
+        vm.getImAppInfo()
+        if (System.currentTimeMillis() - shp.getTokenTimeMillis()!! > 1739000){
+            Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:请求一次")
+            vm.getImToken()
+        }
 
-       vm.registerTimeChange()
+        vm.registerTimeChange()
 
     }
 
@@ -285,7 +309,10 @@ class MainActivity : AppCompatActivity() {
         showFragment(serviceFragment as ServiceFragment)
 
         addFragment(patientFragment as PatientFragment)
-        addFragment(doctorFragment as DoctorFragment)
+
+        if (shp.getRoleType() == 2){
+            addFragment(doctorFragment as DoctorFragment)
+        }
         addFragment(chatFragment as ChatFragment)
         addFragment(mineFragment as MineFragment)
 

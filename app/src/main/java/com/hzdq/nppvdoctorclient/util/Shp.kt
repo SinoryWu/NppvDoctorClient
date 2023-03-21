@@ -74,4 +74,26 @@ class Shp(val context: Context) {
         val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
         return sp.getLong("tokenTimeMillis",0)
     }
+
+    fun getConversationSearchName():String?{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getString("ConversationSearchName","")
+    }
+
+    fun getRoleType():Int{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getInt("roleType",2)
+    }
+
+    fun getMessageIndex():Int?{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getInt("MessageIndex",0)
+    }
+
+    fun getGroupId():Int?{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getInt("groupId",0)
+    }
+
+
 }
