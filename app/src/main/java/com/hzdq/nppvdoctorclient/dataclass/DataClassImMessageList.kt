@@ -15,7 +15,7 @@ data class DataClassImMessageList(
 
 data class DataImMessageList(
     var boolLastPage: Boolean?,
-    var list: MutableList<ImMessageList>?,
+    var list: ArrayList<ImMessageList>?,
     var pageNum: Int?,
     var pageSize: Int?,
     var pages: Int?,
@@ -25,7 +25,7 @@ data class DataImMessageList(
 data class ImMessageList(
     var id:Int?,
     var chatType: Int?,
-    var formUser: FormUser?,
+    var fromUser: FromUser?,
     var gmtCreate: String?,
     var message: String?,
     var messageType: Int?,
@@ -33,7 +33,7 @@ data class ImMessageList(
     var oneself: Boolean?
 )
 
-data class FormUser(
+data class FromUser(
     var imUserId: Int?,
     var userId: Int?,
     var userName: String?,

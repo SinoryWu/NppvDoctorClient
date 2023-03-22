@@ -11,7 +11,7 @@ class URLCollection {
         val USER_AGREEMENT = "https://www.bajiesleep.com/yonghuxieyi.html"
         val PRIVACY_AGREEMENT = "https://www.bajiesleep.com/yinsixieyi.html"
 
-
+        val COMPRESS_PICTURES = "?x-oss-process=image/resize,h_150,m_lfit"
 
 
 

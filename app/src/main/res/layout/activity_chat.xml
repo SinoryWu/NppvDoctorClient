@@ -23,10 +23,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout3"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:background="#ffffff"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -38,7 +39,10 @@
                 android:id="@+id/send_img"
                 android:layout_width="41dp"
                 android:layout_height="37dp"
-                android:layout_marginStart="4dp">
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/send_msg"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/send_msg">
 
                 <ImageView
                     android:layout_width="21dp"
@@ -48,35 +52,57 @@
             </FrameLayout>
 
             <View
+                android:id="@+id/view4"
                 android:layout_width="1dp"
-                android:layout_height="17dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:background="#D5D2D2"
                 android:layout_marginStart="4dp"
-                android:background="#D5D2D2" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/send_img"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <EditText
+
                 android:id="@+id/edit"
                 android:layout_width="244dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
                 android:background="@null"
                 android:hint="请输入信息"
+                android:maxHeight="80dp"
                 android:textColor="#000000"
                 android:textColorHint="#D5D2D2"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/view5"
+                app:layout_constraintStart_toEndOf="@+id/view4"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
+
+                android:id="@+id/view5"
                 android:layout_width="1dp"
-                android:layout_height="17dp"
-                android:layout_marginStart="14dp"
-                android:background="#D5D2D2" />
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="15dp"
+                android:background="#D5D2D2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/send_msg"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <FrameLayout
                 android:id="@+id/send_msg"
                 android:layout_width="41dp"
                 android:layout_height="37dp"
-                android:layout_marginStart="4dp">
+                android:layout_marginEnd="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:layout_width="21dp"
@@ -84,7 +110,7 @@
                     android:layout_gravity="center"
                     android:src="@mipmap/send_msg" />
             </FrameLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <androidx.recyclerview.widget.RecyclerView

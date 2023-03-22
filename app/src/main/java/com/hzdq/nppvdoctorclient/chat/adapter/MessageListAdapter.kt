@@ -1,6 +1,5 @@
 package com.hzdq.nppvdoctorclient.chat.adapter
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.chat.ChatViewModel
-import com.hzdq.nppvdoctorclient.chat.paging.ImConversationListNetWorkStatus
 import com.hzdq.nppvdoctorclient.chat.paging.ImMessageListNetWorkStatus
 import com.hzdq.nppvdoctorclient.dataclass.ImMessageList
 import com.hzdq.nppvdoctorclient.util.SizeUtil
@@ -60,9 +58,9 @@ class MessageListAdapter(val chatViewModel: ChatViewModel):PagedListAdapter<ImMe
     fun updateNetWorkStatus(netWorkStatus: ImMessageListNetWorkStatus?){
         this.netWorkStatus = netWorkStatus
         if(netWorkStatus == ImMessageListNetWorkStatus.IM_MESSAGE_LIST_INITIAL_LOADING){
-            hideFooter()
+//            hideFooter()
         }else{
-            showFooter()
+//            showFooter()
         }
     }
 
@@ -75,21 +73,21 @@ class MessageListAdapter(val chatViewModel: ChatViewModel):PagedListAdapter<ImMe
         return if (hasFooter && position == itemCount-1) R.layout.layout_footer_message else R.layout.item_chat
     }
 
-    //写两个函数根据网络状态决定显示footer或者不显示footer
-    private fun hideFooter(){
-        if(hasFooter){
-            notifyItemRemoved(itemCount - 1)
-        }
-        hasFooter = false
-    }
-    private fun showFooter(){
-        if (hasFooter){
-            notifyItemChanged(itemCount - 1)
-        }else {
-            hasFooter = true
-            notifyItemInserted(itemCount - 1)
-        }
-    }
+//    //写两个函数根据网络状态决定显示footer或者不显示footer
+//    private fun hideFooter(){
+//        if(hasFooter){
+//            notifyItemRemoved(itemCount - 1)
+//        }
+//        hasFooter = false
+//    }
+//    private fun showFooter(){
+//        if (hasFooter){
+//            notifyItemChanged(itemCount - 1)
+//        }else {
+//            hasFooter = true
+//            notifyItemInserted(itemCount - 1)
+//        }
+//    }
 
     //局部刷新
     override fun onBindViewHolder(
@@ -181,14 +179,14 @@ class MessageListViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
                 true -> {
                     fromLayout.visibility = View.GONE
                     toLayout.visibility = View.VISIBLE
-                    toName.text = imMessageList.formUser?.userName
+                    toName.text = imMessageList.fromUser?.userName
                     if (imMessageList.messageType == 1){
 
                         toContent.text = imMessageList.message
                     }else {
                         toContent.text = "[图片]"
                     }
-                    when (imMessageList.formUser?.userType){
+                    when (imMessageList.fromUser?.userType){
                         1 -> {
                             toType.text = "医生"
                             val params = toName.layoutParams as ConstraintLayout.LayoutParams
@@ -215,14 +213,14 @@ class MessageListViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
                 else -> {
                     fromLayout.visibility = View.VISIBLE
                     toLayout.visibility = View.GONE
-                    fromName.text = imMessageList.formUser?.userName
+                    fromName.text = imMessageList.fromUser?.userName
                     if (imMessageList.messageType == 1){
 
                         fromContent.text = imMessageList.message
                     }else {
                         fromContent.text = "[图片]"
                     }
-                    when (imMessageList.formUser?.userType){
+                    when (imMessageList.fromUser?.userType){
                         1 -> {
                             fromType.text = "医生"
                         }

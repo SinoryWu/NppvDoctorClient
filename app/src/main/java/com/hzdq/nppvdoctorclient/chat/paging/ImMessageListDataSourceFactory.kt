@@ -12,11 +12,11 @@ import com.hzdq.nppvdoctorclient.dataclass.ImMessageList
  *Description:
  */
 class ImMessageListDataSourceFactory(private val context: Context):DataSource.Factory<Int,ImMessageList>() {
-    private var _imMessageListDataSource = MutableLiveData<ImMessageListDataSource>()
-    val imMessageListDataSource:LiveData<ImMessageListDataSource> = _imMessageListDataSource
+    val imMessageListDataSource = MutableLiveData<ImMessageListDataSource>()
+
     override fun create(): DataSource<Int, ImMessageList> {
         return ImMessageListDataSource(context).also {
-            _imMessageListDataSource.postValue(it)
+            imMessageListDataSource.postValue(it)
         }
     }
 

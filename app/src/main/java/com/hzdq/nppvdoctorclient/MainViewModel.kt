@@ -1,6 +1,7 @@
 package com.hzdq.nppvdoctorclient
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.hzdq.nppvdoctorclient.dataclass.DataClassGeneralBoolean
@@ -30,6 +31,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 call: Call<DataClassGeneralBoolean>,
                 response: Response<DataClassGeneralBoolean>
             ) {
+                Log.d("logOut", "onResponse:${response.body()} ")
                 try {
                     logOutMsg.value = "${response.body()?.msg}"
                     if (response.body()?.code.equals("1")){

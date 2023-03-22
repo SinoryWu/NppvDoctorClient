@@ -1,9 +1,6 @@
 package com.hzdq.nppvdoctorclient.retrofit
 
-import com.hzdq.nppvdoctorclient.body.BodyImConversationList
-import com.hzdq.nppvdoctorclient.body.BodyImMessageList
-import com.hzdq.nppvdoctorclient.body.BodyLoginPassword
-import com.hzdq.nppvdoctorclient.body.BodyLoginVerificationCode
+import com.hzdq.nppvdoctorclient.body.*
 import com.hzdq.nppvdoctorclient.dataclass.*
 import retrofit2.Call
 import retrofit2.http.Body
@@ -32,4 +29,10 @@ interface Api {
     //获取消息列表
     @POST("/hx_app/doctor/app/im/imMessageList")
     fun getImMessageList(@Body bodyImMessageList: BodyImMessageList):Call<DataClassImMessageList>
+    //发送消息
+    @POST("/hx_app/doctor/app/im/sendMessage")
+    fun sendMessage(@Body bodySendMessage: BodySendMessage):Call<DataClassGeneralBoolean>
+    //已读消息
+    @POST("/hx_app/doctor/app/im/readAllMsg")
+    fun readAllMsg(@Body bodyReadAllMsg: BodyReadAllMsg):Call<DataClassNoData>
 }

@@ -137,6 +137,7 @@ class ChatFragment : Fragment() {
 
         })
 
+        Log.d("token", "${shp?.getToken()} ")
 
         conversationListAdapter?.setOnItemClickListener(object :ConversationListAdapter.OnItemClickListener{
             override fun onItemClick(groupId: Int,groupName:String,position:Int) {
@@ -157,6 +158,18 @@ class ChatFragment : Fragment() {
         if (requestCode == CHAT_REQUEST_CODE){
             if (resultCode == RESULT_OK){
                 chatViewModel.conversationListLiveData.value!![chatViewModel.conversationPosition.value!!]!!.numberOfUnreadMessages = 0
+
+                if (data?.getStringExtra("lastMsgTime") != null){
+                    chatViewModel.conversationListLiveData.value!![chatViewModel.conversationPosition.value!!]!!.lastMsgTime = data.getStringExtra("lastMsgTime")
+                }
+                if (data?.getStringExtra("lastMessage") != null){
+                    chatViewModel.conversationListLiveData.value!![chatViewModel.conversationPosition.value!!]!!.lastMessage = data.getStringExtra("lastMessage")
+                }
+
+                if (data?.getIntExtra("lastMessageType",1) != null){
+                    chatViewModel.conversationListLiveData.value!![chatViewModel.conversationPosition.value!!]!!.lastMessageType = data.getIntExtra("lastMessageType",1)
+                }
+
                 conversationListAdapter?.notifyItemChanged( chatViewModel.conversationPosition.value!!,chatViewModel.conversationListLiveData.value!![chatViewModel.conversationPosition.value!!])
             }
         }
