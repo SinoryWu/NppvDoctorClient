@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+
+
+    <ImageView
+        android:id="@+id/item_conversation_list_head"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="11dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/message_list_head" />
+
+    <TextView
+        android:id="@+id/item_conversation_list_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ff000000"
+        android:textSize="12sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="11dp"
+        app:layout_constraintStart_toEndOf="@+id/item_conversation_list_head"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="王二叁-2022年1月1日-长期管理" />
+
+    <TextView
+        android:id="@+id/item_conversation_list_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="32dp"
+        android:ellipsize="end"
+        android:maxEms="18"
+        android:maxLines="1"
+        android:textColor="#ff888888"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/item_conversation_list_head"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="夜间血氧得到良好改善，夜间平均血氧饱和度和度和度和度" />
+
+    <TextView
+        android:id="@+id/item_conversation_list_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ff888888"
+        android:textSize="10sp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="14:30" />
+
+    <FrameLayout
+        android:id="@+id/item_conversation_list_count"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@drawable/chat_count_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/item_conversation_list_count_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="#ffffffff"
+            android:textSize="8sp"
+            tools:text="99+" />
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#DCDCDC"
+        android:layout_marginStart="82dp"
+        android:layout_marginEnd="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/item_conversation_list_count"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

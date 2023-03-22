@@ -45,6 +45,15 @@ class ChatActivity : AppCompatActivity() {
 
 
 
+        initView()
+
+
+
+
+    }
+
+
+    private fun initView(){
         binding.head.content.text = intent.getStringExtra("groupName")
 
         binding.head.back.setOnClickListener {
@@ -77,8 +86,8 @@ class ChatActivity : AppCompatActivity() {
             }
         })
 
-    }
 
+    }
 
 
 
