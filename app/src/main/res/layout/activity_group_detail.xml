@@ -24,15 +24,16 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/button2"
+            app:layout_constraintBottom_toTopOf="@+id/exit_group"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/head" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/exit_group"
             android:layout_width="0dp"
             android:layout_height="52dp"
             android:background="@drawable/log_out_group_btn_bg"

@@ -1,5 +1,6 @@
 package com.hzdq.nppvdoctorclient.chat.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.hzdq.nppvdoctorclient.chat.paging.ImConversationListNetWorkStatus
 import com.hzdq.nppvdoctorclient.chat.paging.ImMessageListNetWorkStatus
 import com.hzdq.nppvdoctorclient.dataclass.ImConversationList
 import com.hzdq.nppvdoctorclient.util.DateFormatUtil
+import com.hzdq.nppvdoctorclient.util.ViewClickDelay.clickDelay
 
 /**
  *Time:2023/3/20
@@ -46,7 +48,7 @@ class ConversationListAdapter(val chatViewModel: ChatViewModel):PagedListAdapter
     private var mClickListener: OnItemClickListener? = null
     //设置回调接口
     interface OnItemClickListener {
-        fun onItemClick(groupId:Int,groupName:String,position: Int)
+        fun onItemClick(groupId:Int,groupName:String,joinState:Int,groupThirdPartyId:String,position: Int)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -104,8 +106,11 @@ class ConversationListAdapter(val chatViewModel: ChatViewModel):PagedListAdapter
                 else -> {
                     val dataItem = getItem(position) ?: return
                     (holder as ConversationListViewHolder).bindWithItem(dataItem)
-                    holder.itemView.setOnClickListener {
-                        mClickListener?.onItemClick(dataItem.groupId!!,dataItem.groupName!!,holder.absoluteAdapterPosition)
+                    holder.itemView.clickDelay {
+                        dataItem.groupThirdPartyId?.let { it1 ->
+                            mClickListener?.onItemClick(dataItem.groupId!!,dataItem.groupName!!,dataItem.joinState!!,
+                                it1,holder.absoluteAdapterPosition)
+                        }
                     }
                 }
             }
@@ -123,8 +128,11 @@ class ConversationListAdapter(val chatViewModel: ChatViewModel):PagedListAdapter
             else -> {
                 val dataItem = getItem(position) ?: return
                 (holder as ConversationListViewHolder).bindWithItem(dataItem)
-                holder.itemView.setOnClickListener {
-                    mClickListener?.onItemClick(dataItem.groupId!!,dataItem.groupName!!,holder.absoluteAdapterPosition)
+                holder.itemView.clickDelay {
+                    dataItem.groupThirdPartyId?.let { it1 ->
+                        mClickListener?.onItemClick(dataItem.groupId!!,dataItem.groupName!!,dataItem.joinState!!,
+                            it1,holder.absoluteAdapterPosition)
+                    }
                 }
             }
         }
@@ -202,6 +210,7 @@ class ConversationListFooterViewHolder(itemView: View):RecyclerView.ViewHolder(i
 
 
         with(itemView){
+
             when(netWorkStatus){
                 ImConversationListNetWorkStatus.IM_CONVERSATION_LIST_FAILED -> {
                     layout.visibility = View.VISIBLE
@@ -215,11 +224,27 @@ class ConversationListFooterViewHolder(itemView: View):RecyclerView.ViewHolder(i
                     progressBar.visibility = View.GONE
                     isClickable = false
                 }
-                else -> {
-                    layout.visibility = View.VISIBLE
+                ImConversationListNetWorkStatus.IM_CONVERSATION_LIST_INITIAL_LOADING->{
+                    layout.visibility = View.GONE
                     textView.text = "正在加载"
-                    progressBar.visibility = View.VISIBLE
+                    progressBar.visibility = View.GONE
                     isClickable = false
+                }
+                ImConversationListNetWorkStatus.IM_CONVERSATION_LIST_INITIAL_LOADED->{
+                    layout.visibility = View.GONE
+                    textView.text = "加载完成"
+                    progressBar.visibility = View.GONE
+                    isClickable = false
+                }
+                else -> {
+                    layout.visibility = View.GONE
+                    textView.text = "正在加载"
+                    progressBar.visibility = View.GONE
+                    isClickable = false
+//                    layout.visibility = View.VISIBLE
+//                    textView.text = "正在加载"
+//                    progressBar.visibility = View.VISIBLE
+//                    isClickable = false
                 }
             }
         }

@@ -21,10 +21,14 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.hzdq.nppvdoctorclient.R
+import com.hzdq.nppvdoctorclient.chat.ChatViewModel
 import com.hzdq.nppvdoctorclient.dataclass.ImMessageList
 import com.hzdq.nppvdoctorclient.retrofit.URLCollection
+import com.hzdq.nppvdoctorclient.util.DateFormatUtil
 import com.hzdq.nppvdoctorclient.util.SizeUtil
+import com.hzdq.nppvdoctorclient.util.TimeIntervalUtil
 import io.supercharge.shimmerlayout.ShimmerLayout
+import kotlin.math.absoluteValue
 import kotlin.math.max
 
 /**
@@ -32,7 +36,7 @@ import kotlin.math.max
  *Author:Sinory
  *Description:
  */
-class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList,MessageListAdapter2.MyViewHolder> (DIFFCALLBACK){
+class MessageListAdapter2(private val context:Context,val chatViewModel: ChatViewModel):ListAdapter<ImMessageList,MessageListAdapter2.MyViewHolder> (DIFFCALLBACK){
     val urlCollection = URLCollection
     // 预加载回调
     var onPreload: (() -> Unit)? = null
@@ -48,8 +52,9 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
     private var mClickListener: OnItemClickListener? = null
     //设置回调接口
     interface OnItemClickListener {
-        fun onItemClick(imageUrl:String)
+        fun onItemClick(messageType:Int,imageUrl:String,view:View,position: Int)
     }
+
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mClickListener = listener
@@ -76,6 +81,7 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
         val fromPic = itemView.findViewById<RoundCornerImageView>(R.id.item_chat_from_pic)
 
 
+
         val toLayout = itemView.findViewById<ConstraintLayout>(R.id.item_chat_to)
         val toHead  = itemView.findViewById<ImageView>(R.id.item_chat_to_head)
         val toName = itemView.findViewById<TextView>(R.id.item_chat_to_name)
@@ -96,27 +102,53 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         checkPreload(holder.absoluteAdapterPosition)
-        val imMessageList = getItem(position)
+        val imMessageList = getItem(holder.absoluteAdapterPosition)
+
 
         if (holder.absoluteAdapterPosition == 0){
             holder.layout.setPadding(0,SizeUtil.dip2px(context,10f),0,SizeUtil.dip2px(context,10f))
         }
+
+        if (holder.absoluteAdapterPosition != chatViewModel.messageList.value?.size!!-1){
+            if (TimeIntervalUtil.isTimeDifferenceGreaterThan(imMessageList.gmtCreate,getItem(holder.absoluteAdapterPosition+1).gmtCreate,15)){
+                holder.time.visibility = View.VISIBLE
+                holder.time.text = DateFormatUtil.likeWeChatTime(imMessageList.gmtCreate)
+            }else {
+                holder.time.visibility = View.GONE
+                holder.time.text = ""
+            }
+        }
+
         when(imMessageList.oneself){
             true -> {
-                holder.fromLayout.visibility = View.GONE
-                holder.toLayout.visibility = View.VISIBLE
 
+                holder.fromLayout.visibility = View.GONE
+//                holder.fromLayout.visibility = View.INVISIBLE
+                holder.toLayout.visibility = View.VISIBLE
                 holder.toName.text = imMessageList.fromUser?.userName
+                holder.toPic.setOnClickListener {
+                    imMessageList.messageType?.let { it1 -> imMessageList.message?.let { it2 ->
+                        mClickListener?.onItemClick(it1,
+                            it2,holder.toPic,holder.absoluteAdapterPosition
+                        )
+                    } }
+
+
+                }
                 if (imMessageList.messageType == 1){
                     holder.toContent.visibility = View.VISIBLE
                     holder.toShimmer.visibility = View.GONE
+//                    holder.toShimmer.visibility = View.INVISIBLE
+                    holder.toPic.visibility = View.GONE
+//                    holder.toPic.visibility = View.INVISIBLE
                     holder.toContent.text = imMessageList.message
+                    Log.d("adapter2", "onBindViewHolder:${holder.absoluteAdapterPosition} ${imMessageList.id} ")
                 }else {
-                    holder.itemView.setOnClickListener {
-                        imMessageList.message?.let { it1 -> mClickListener?.onItemClick(it1) }
-                    }
+
                     holder.toContent.visibility = View.GONE
+//                    holder.toContent.visibility = View.INVISIBLE
                     holder.toShimmer.visibility = View.VISIBLE
+                    holder.toPic.visibility = View.VISIBLE
                     holder.toShimmer.apply {
                         setShimmerColor(0x55FFFFFF) //设置闪烁颜色
                         setShimmerAngle(0) //设置闪烁角度
@@ -128,6 +160,8 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
                         .asBitmap()
                         .load(imMessageList.message+urlCollection.COMPRESS_PICTURES)
                         .placeholder(R.drawable.pic_initial_bg)
+                        .error(R.drawable.pic_initial_bg)//加载异常显示的图片
+                        .fallback(R.drawable.pic_initial_bg) //url为空的时候,显示的图片
                         .listener(object :RequestListener<Bitmap>{
                             override fun onLoadFailed(
                                 e: GlideException?,
@@ -160,8 +194,10 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
                         }).into(holder.toPic)
 //                    holder.toContent.text = "[图片]"
                 }
+
                 when (imMessageList.fromUser?.userType){
                     1 -> {
+                        holder.toHead.setImageResource(R.mipmap.chat_doctor_icon)
                         holder.toType.text = "医生"
                         val params = holder.toName.layoutParams as ConstraintLayout.LayoutParams
 
@@ -169,6 +205,7 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
                         holder.toName.layoutParams = params
                     }
                     2 -> {
+                        holder.toHead.setImageResource(R.mipmap.chat_bajie_icon)
                         holder.toType.text = "医助"
                         val params = holder.toName.layoutParams as ConstraintLayout.LayoutParams
 
@@ -176,6 +213,7 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
                         holder.toName.layoutParams = params
                     }
                     else -> {
+                        holder.toHead.setImageResource(R.mipmap.chat_patient_icon)
                         holder.toType.text = ""
                         val params = holder.toName.layoutParams as ConstraintLayout.LayoutParams
 
@@ -187,17 +225,32 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
             else -> {
                 holder.fromLayout.visibility = View.VISIBLE
                 holder.toLayout.visibility = View.GONE
+//                holder.toLayout.visibility = View.INVISIBLE
                 holder.fromName.text = imMessageList.fromUser?.userName
+
+                holder.fromPic.setOnClickListener {
+                    imMessageList.messageType?.let { it1 -> imMessageList.message?.let { it2 ->
+                        mClickListener?.onItemClick(it1,
+                            it2,holder.fromPic,holder.absoluteAdapterPosition
+                        )
+                    } }
+
+
+                }
+
                 if (imMessageList.messageType == 1){
                     holder.fromShimmer.visibility = View.GONE
+//                    holder.fromShimmer.visibility = View.INVISIBLE
+                    holder.fromPic.visibility = View.GONE
+//                    holder.fromPic.visibility = View.INVISIBLE
                     holder.fromContent.visibility = View.VISIBLE
                     holder.fromContent.text = imMessageList.message
+
                 }else {
-                    holder.itemView.setOnClickListener {
-                        imMessageList.message?.let { it1 -> mClickListener?.onItemClick(it1) }
-                    }
                     holder.fromContent.visibility = View.GONE
+//                    holder.fromContent.visibility = View.INVISIBLE
                     holder.fromShimmer.visibility = View.VISIBLE
+                    holder.fromPic.visibility = View.VISIBLE
                     holder.fromShimmer.apply {
                         setShimmerColor(0x55FFFFFF) //设置闪烁颜色
                         setShimmerAngle(0) //设置闪烁角度
@@ -208,6 +261,8 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
                     Glide.with(holder.itemView)
                         .asBitmap()
                         .load(imMessageList.message+urlCollection.COMPRESS_PICTURES)
+                        .fallback(R.drawable.pic_initial_bg) //url为空的时候,显示的图片
+                        .error(R.drawable.pic_initial_bg)//加载异常显示的图片
                         .placeholder(R.drawable.pic_initial_bg)
                         .listener(object :RequestListener<Bitmap>{
                             override fun onLoadFailed(
@@ -242,14 +297,18 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
 
 //
                 }
+
                 when (imMessageList.fromUser?.userType){
                     1 -> {
+                        holder.fromHead.setImageResource(R.mipmap.chat_doctor_icon)
                         holder.fromType.text = "医生"
                     }
                     2 -> {
+                        holder.fromHead.setImageResource(R.mipmap.chat_bajie_icon)
                         holder.fromType.text = "医助"
                     }
                     else -> {
+                        holder.fromHead.setImageResource(R.mipmap.chat_doctor_icon)
                         holder.fromType.text = ""
                     }
                 }
@@ -258,17 +317,49 @@ class MessageListAdapter2(private val context:Context):ListAdapter<ImMessageList
         }
     }
 
+//    //局部刷新
+//    override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
+//
+//        if (payloads.isEmpty()){
+//            super.onBindViewHolder(holder, position, payloads)
+//            return
+//        }else {
+//
+//        }
+//    }
     // 判断是否进行预加载
     private fun checkPreload(position: Int) {
-        if (onPreload != null
-            && position == max(itemCount - 1 - preloadItemCount, 0)// 索引值等于阈值
-            && scrollState != SCROLL_STATE_IDLE // 列表正在滚动
-            && !isPreloading // 预加载不在进行中
-        ) {
-            isPreloading = true // 表示正在执行预加载
-            Log.d("asdasd", "checkPreload: ")
-            onPreload?.invoke()
-        }
+    if (onPreload != null
+        && position == max(itemCount - 1 - preloadItemCount, 0)// 索引值等于阈值
+        && scrollState != SCROLL_STATE_IDLE // 列表正在滚动
+        && !isPreloading // 预加载不在进行中
+    ) {
+        isPreloading = true // 表示正在执行预加载
+
+        onPreload?.invoke()
+    }
+//       if (chatViewModel.messageCount == 1){
+//           if (onPreload != null
+//               && position == max(itemCount - 1 - preloadItemCount, 0)// 索引值等于阈值
+//               && scrollState != SCROLL_STATE_IDLE // 列表正在滚动
+//               && !isPreloading // 预加载不在进行中
+//           ) {
+//               isPreloading = true // 表示正在执行预加载
+//
+//               onPreload?.invoke()
+//           }
+//       }else {
+//           if (onPreload != null
+//               && position == max(itemCount - 1 - chatViewModel.preloadItemCount.value!!, 0)// 索引值等于阈值
+//               && scrollState != SCROLL_STATE_IDLE // 列表正在滚动
+//               && !isPreloading // 预加载不在进行中
+//           ) {
+//               isPreloading = true // 表示正在执行预加载
+//
+//               onPreload?.invoke()
+//           }
+//       }
+
     }
 
 

@@ -30,6 +30,8 @@ data class ImConversationList(
     var lastMessage: String?,
     var lastMessageType: Int?,
     var lastMsgTime: String?,
+    var joinState:Int?,
+    var exitTime:String?,
     var numberOfUnreadMessages: Int?,
     var packageId: Int?
 )

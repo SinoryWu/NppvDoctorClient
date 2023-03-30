@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/item_chat_layout"
-    android:paddingTop="10dp"
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
@@ -27,7 +26,7 @@
         android:maxWidth="285dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -40,7 +39,7 @@
             android:layout_height="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@mipmap/chat_patient_icon" />
+            tools:src="@mipmap/chat_patient_icon" />
 
         <TextView
             android:id="@+id/item_chat_from_name"
@@ -83,7 +82,7 @@
             <io.supercharge.shimmerlayout.ShimmerLayout
                 android:id="@+id/item_chat_from_shimmer"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:minWidth="0dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -94,8 +93,9 @@
                     android:id="@+id/item_chat_from_pic"
                     android:layout_width="wrap_content"
                     android:layout_height="150dp"
+                    android:visibility="gone"
                     android:scaleType="center"
-                    app:rciv_radius="5dp" />
+                    app:rciv_radius="8dp" />
 
             </io.supercharge.shimmerlayout.ShimmerLayout>
             <TextView
@@ -117,10 +117,10 @@
         android:id="@+id/item_chat_to"
 
         android:layout_width="wrap_content"
-
+        android:layout_marginTop="10dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_chat_time"
@@ -132,7 +132,7 @@
             android:layout_height="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@mipmap/chat_bajie_icon" />
+            tools:src="@mipmap/chat_bajie_icon" />
 
 
         <TextView
@@ -173,9 +173,8 @@
             <io.supercharge.shimmerlayout.ShimmerLayout
                 android:id="@+id/item_chat_to_shimmer"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:visibility="visible"
+                android:layout_height="150dp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -183,9 +182,10 @@
                 <com.android.liuzhuang.rcimageview.RoundCornerImageView
                     android:id="@+id/item_chat_to_pic"
                     android:layout_width="wrap_content"
+                    android:visibility="gone"
                     android:layout_height="150dp"
                     android:scaleType="center"
-                    app:rciv_radius="5dp" />
+                    app:rciv_radius="8dp" />
 
             </io.supercharge.shimmerlayout.ShimmerLayout>
             <TextView

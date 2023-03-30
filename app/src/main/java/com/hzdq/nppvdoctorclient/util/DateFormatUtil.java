@@ -1,8 +1,11 @@
 package com.hzdq.nppvdoctorclient.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Time:2023/3/20
@@ -78,6 +81,60 @@ public class DateFormatUtil {
 
     private static boolean isWithinYear(Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+    }
+
+
+    /**
+     * 像微信一样显示时间
+     * @param dateString
+     * @return
+     */
+    public static String likeWeChatTime(String dateString) {
+        String result = "";
+        DateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = null;
+        try {
+            date = inputDateFormat.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (date != null) {
+            Calendar inputCal = Calendar.getInstance();
+            inputCal.setTime(date);
+
+            Calendar currentCal = Calendar.getInstance();
+
+            // Check if the given date is today
+            if (inputCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
+                    inputCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR)) {
+                SimpleDateFormat todayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                result = todayFormat.format(date);
+            }
+            // Check if the given date is yesterday
+            else if (inputCal.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
+                    inputCal.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR) - 1) {
+                int hourOfDay = inputCal.get(Calendar.HOUR_OF_DAY);
+                if (hourOfDay >= 0 && hourOfDay < 6) {
+                    SimpleDateFormat yesterdayFormat = new SimpleDateFormat("昨天 凌晨HH:mm", Locale.getDefault());
+                    result = yesterdayFormat.format(date);
+                } else if (hourOfDay >= 6 && hourOfDay < 12) {
+                    SimpleDateFormat yesterdayFormat = new SimpleDateFormat("昨天 上午HH:mm", Locale.getDefault());
+                    result = yesterdayFormat.format(date);
+                } else if (hourOfDay >= 12 && hourOfDay < 18) {
+                    SimpleDateFormat yesterdayFormat = new SimpleDateFormat("昨天 下午HH:mm", Locale.getDefault());
+                    result = yesterdayFormat.format(date);
+                } else if (hourOfDay >= 18 && hourOfDay < 24) {
+                    SimpleDateFormat yesterdayFormat = new SimpleDateFormat("昨天 晚上HH:mm", Locale.getDefault());
+                    result = yesterdayFormat.format(date);
+                }
+            } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                result = dateFormat.format(date);
+            }
+        }
+
+        return result;
     }
 
 }

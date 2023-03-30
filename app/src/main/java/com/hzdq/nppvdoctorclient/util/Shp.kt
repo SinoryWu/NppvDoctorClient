@@ -95,5 +95,24 @@ class Shp(val context: Context) {
         return sp.getInt("groupId",0)
     }
 
+    fun getUserName():String?{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getString("userName","")
+    }
 
+    fun getFirstLoginIm():Boolean{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getBoolean("firstLoginIm",true)
+    }
+
+    fun getUid():Int{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getInt("uid",0)
+    }
+
+
+    fun getDoctorSearchName():String?{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getString("doctorSearchName","")
+    }
 }

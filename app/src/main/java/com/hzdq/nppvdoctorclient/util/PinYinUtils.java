@@ -51,6 +51,11 @@ public class PinYinUtils {
                 pinyin += arr[i];
             }
         }
-        return pinyin;
+        if (EnglishUtil.INSTANCE.isEnglishAlphabet(pinyin.substring(0, 1))){
+            return pinyin;
+        }else {
+            return "#"+pinyin;
+        }
+
     }
 }

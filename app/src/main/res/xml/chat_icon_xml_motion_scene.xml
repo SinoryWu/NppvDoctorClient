@@ -47,7 +47,11 @@
             motion:layout_constraintTop_toBottomOf="@+id/img"
             motion:layout_constraintHorizontal_bias="0.5"
             motion:layout_constraintStart_toStartOf="parent" />
-
+        <Constraint android:id="@id/chat_total_count">
+            <PropertySet
+                motion:applyMotionScene="false"
+                motion:visibilityMode="ignore" />
+        </Constraint>
 
     </ConstraintSet>
 
@@ -77,7 +81,9 @@
 
 
         <Constraint android:id="@id/chat_total_count">
-
+            <PropertySet
+                motion:applyMotionScene="false"
+                motion:visibilityMode="ignore" />
         </Constraint>
     </ConstraintSet>
 </MotionScene>

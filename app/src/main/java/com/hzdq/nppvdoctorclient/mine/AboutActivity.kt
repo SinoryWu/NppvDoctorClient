@@ -15,6 +15,7 @@ import com.hzdq.nppvdoctorclient.mine.dialog.VersionUpdateDialog
 import com.hzdq.nppvdoctorclient.util.ActivityCollector
 import com.hzdq.nppvdoctorclient.util.ToastUtil
 import com.hzdq.nppvdoctorclient.util.TokenDialogUtil
+import com.hzdq.nppvdoctorclient.util.ViewClickDelay.clickDelay
 import com.liulishuo.filedownloader.BaseDownloadTask
 import com.liulishuo.filedownloader.FileDownloadListener
 import com.liulishuo.filedownloader.FileDownloader
@@ -47,7 +48,7 @@ class AboutActivity : AppCompatActivity() {
 
         binding.version.text = "Version${mineViewModel.getVerName(this)}"
 
-        binding.cancellation.layout.setOnClickListener {
+        binding.cancellation.layout.clickDelay {
             startActivity(Intent(this,CancelledAccountActivity::class.java))
         }
 

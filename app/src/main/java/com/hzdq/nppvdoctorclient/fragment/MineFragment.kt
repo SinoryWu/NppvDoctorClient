@@ -7,36 +7,55 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.hzdq.nppvdoctorclient.MainViewModel
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.databinding.FragmentMineBinding
 import com.hzdq.nppvdoctorclient.mine.AboutActivity
 import com.hzdq.nppvdoctorclient.mine.MineViewModel
 import com.hzdq.nppvdoctorclient.mine.ModifyPasswordActivity
 import com.hzdq.nppvdoctorclient.mine.PrivacyAgreementActivity
+import com.hzdq.nppvdoctorclient.util.Shp
+import com.hzdq.nppvdoctorclient.util.ViewClickDelay.clickDelay
 
 class MineFragment : Fragment() {
 
     private lateinit var mineViewModel: MineViewModel
     private lateinit var binding:FragmentMineBinding
-
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var shp:Shp
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         mineViewModel = ViewModelProvider(requireActivity()).get(MineViewModel::class.java)
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_mine, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        shp = Shp(requireContext())
         initView()
 
         click()
 
+        mainViewModel.userName.observe(requireActivity(), Observer {
+            binding.name.text = it
+        })
+
+        mainViewModel.hospitalName.observe(requireActivity(), Observer {
+            binding.hospital.text = it
+        })
+
+        if (shp.getRoleType() == 2){
+            binding.type.text = "医生"
+        }else {
+            binding.type.text = "医助"
+        }
     }
 
     private fun initView(){
@@ -65,23 +84,23 @@ class MineFragment : Fragment() {
             mineViewModel.logOut.value = "show"
         }
 
-        binding.about.layout.setOnClickListener {
+        binding.about.layout.clickDelay {
             startActivity(Intent(requireActivity(),AboutActivity::class.java))
         }
 
-        binding.privacyAgreement.layout.setOnClickListener {
+        binding.privacyAgreement.layout.clickDelay {
             val intent = Intent(requireActivity(),PrivacyAgreementActivity::class.java)
             intent.putExtra("type","privacy")
             startActivity(intent)
         }
 
-        binding.userAgreement.layout.setOnClickListener {
+        binding.userAgreement.layout.clickDelay {
             val intent = Intent(requireActivity(),PrivacyAgreementActivity::class.java)
             intent.putExtra("type","user")
             startActivity(intent)
         }
 
-        binding.modifyPassword.layout.setOnClickListener {
+        binding.modifyPassword.layout.clickDelay {
             startActivity(Intent(requireActivity(),ModifyPasswordActivity::class.java))
         }
     }

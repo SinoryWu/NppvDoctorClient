@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.hzdq.nppvdoctorclient.dataclass.DataClassGeneralBoolean
+import com.hzdq.nppvdoctorclient.dataclass.DataClassUserInfo
 import com.hzdq.nppvdoctorclient.retrofit.RetrofitSingleton
+import com.hzdq.nppvdoctorclient.util.Shp
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,6 +22,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val retrofitSingleton = RetrofitSingleton.getInstance(application.applicationContext)
 
     val netWorkTimeOut = MutableLiveData(0)
+    val shp = Shp(application.applicationContext)
     /**
      * 登出
      */
@@ -31,7 +34,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 call: Call<DataClassGeneralBoolean>,
                 response: Response<DataClassGeneralBoolean>
             ) {
-                Log.d("logOut", "onResponse:${response.body()} ")
+
                 try {
                     logOutMsg.value = "${response.body()?.msg}"
                     if (response.body()?.code.equals("1")){
@@ -59,4 +62,52 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         })
     }
+
+
+    /**
+     * 获取用户信息
+     */
+    val userInfoCode = MutableLiveData(0)
+    val userInfoMsg = MutableLiveData("")
+    val userName = MutableLiveData("")
+    val hospitalName = MutableLiveData("")
+    fun getUserInfo(){
+        retrofitSingleton.api().getUserInfo().enqueue(object :Callback<DataClassUserInfo>{
+            override fun onResponse(
+                call: Call<DataClassUserInfo>,
+                response: Response<DataClassUserInfo>
+            ) {
+                try {
+                    userInfoMsg.value = "${response.body()?.msg}"
+                    if (response.body()?.code.equals("1")){
+
+                        hospitalName.value = response.body()?.data?.hospitalName
+                        userName.value = response.body()?.data?.name
+                        shp.saveToSp("userName",response.body()?.data?.name!!)
+                        shp.saveToSpInt("uid",response.body()?.data?.uid!!)
+
+                        userInfoCode.value = 1
+
+
+                    }else if(response.body()?.code.equals("11")){
+                        userInfoCode.value = 11
+                    }else {
+                        userInfoCode.value = response.body()?.code?.toInt()
+                    }
+                }catch (e: Exception){
+
+                    userInfoMsg.value = "错误！请求响应码：${response.code()}"
+                    userInfoCode.value = 200
+                }
+            }
+
+            override fun onFailure(call: Call<DataClassUserInfo>, t: Throwable) {
+                userInfoMsg.value = "获取用户信息网络请求失败"
+                userInfoCode.value = 404
+                netWorkTimeOut.value  = 2
+            }
+
+        })
+    }
+
 }

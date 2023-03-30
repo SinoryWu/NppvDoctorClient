@@ -30,7 +30,7 @@ data class ImMessageList(
     var message: String?,
     var messageType: Int?,
     var msgThirdPartyId: String?,
-    var oneself: Boolean?
+    var oneself: Boolean?,
 )
 
 data class FromUser(

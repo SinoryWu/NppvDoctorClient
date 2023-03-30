@@ -2,10 +2,12 @@ package com.hzdq.nppvdoctorclient.retrofit
 
 import com.hzdq.nppvdoctorclient.body.*
 import com.hzdq.nppvdoctorclient.dataclass.*
+import okhttp3.Callback
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
+import java.io.File
 
 interface Api {
     //用户密码登录
@@ -35,4 +37,23 @@ interface Api {
     //已读消息
     @POST("/hx_app/doctor/app/im/readAllMsg")
     fun readAllMsg(@Body bodyReadAllMsg: BodyReadAllMsg):Call<DataClassNoData>
+    //上传文件
+    @Multipart
+    @POST("/hx_app/base/aly/oss/upload")
+    fun uploadFile(@Part file: MultipartBody.Part):Call<DataClassFile>
+    //获取用户个人信息
+    @GET("/hx_app/doctor/app/user/load")
+    fun getUserInfo():Call<DataClassUserInfo>
+    //获取群成员
+    @GET("/hx_app/doctor/app/im/listGroupMembers")
+    fun getGroupMembers(@Query("groupId") groupId:Int):Call<DataClassGroupMember>
+    //退群
+    @GET("/hx_app/doctor/app/im/groupRemove")
+    fun getGroupRemove(@Query("groupId") groupId:Int):Call<DataClassExitGroup>
+    //获取所有医生/医助列表
+    @POST("/hx_app/doctor/app/doctor/user/listPage")
+    fun getDoctorList(@Body bodyDoctorList: BodyDoctorList):Call<DataClassDoctorList>
+    //拉人入群
+    @POST("/hx_app/doctor/app/im/groupInvitation")
+    fun groupInvitation(@Body bodyGroupInvitation: BodyGroupInvitation):Call<DataClassNoData>
 }

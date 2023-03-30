@@ -65,4 +65,8 @@ class PersonAdapter:ListAdapter<Person, PersonAdapter.MyViewHolder>(DIFFCALLBACK
         }
 
     }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }

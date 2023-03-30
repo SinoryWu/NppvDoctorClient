@@ -7,9 +7,17 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.hzdq.nppvdoctorclient.dataclass.DataClassUserInfo
+import com.hzdq.nppvdoctorclient.retrofit.RetrofitSingleton
+import com.hzdq.nppvdoctorclient.util.Shp
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.lang.Exception
 
 class MineViewModel(application: Application) : AndroidViewModel(application) {
 
+    val retrofitSingleton = RetrofitSingleton.getInstance(application.applicationContext)
     //退出登录 show.弹出动画，close.动画消失
     val logOut = MutableLiveData("")
 
@@ -18,6 +26,8 @@ class MineViewModel(application: Application) : AndroidViewModel(application) {
 
     val newPassword = MutableLiveData("")
     val repeatPassword = MutableLiveData("")
+
+    val shp = Shp(application.applicationContext)
 
     /**
      * 获取版本号
@@ -54,4 +64,6 @@ class MineViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     }
+
+
 }

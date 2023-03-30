@@ -22,6 +22,7 @@ import com.hzdq.nppvdoctorclient.util.BarColor
 import com.hzdq.nppvdoctorclient.util.PhoneFormatCheckUtils
 import com.hzdq.nppvdoctorclient.util.Shp
 import com.hzdq.nppvdoctorclient.util.ToastUtil
+import com.hzdq.nppvdoctorclient.util.ViewClickDelay.clickDelay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -209,13 +210,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun click(){
-        binding.userAgreement.setOnClickListener {
+        binding.userAgreement.clickDelay {
             val intent = Intent(this, PrivacyAgreementActivity::class.java)
             intent.putExtra("type","user")
             startActivity(intent)
         }
 
-        binding.privacyStatement.setOnClickListener {
+        binding.privacyStatement.clickDelay {
             val intent = Intent(this, PrivacyAgreementActivity::class.java)
             intent.putExtra("type","privacy")
             startActivity(intent)

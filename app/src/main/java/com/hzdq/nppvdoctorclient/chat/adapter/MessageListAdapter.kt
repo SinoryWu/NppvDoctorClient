@@ -174,7 +174,6 @@ class MessageListViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
     }
     fun bindWithItem(imMessageList: ImMessageList){
         with(itemView){
-            Log.d("asdasd", "bindWithItem:${imMessageList.gmtCreate} ")
             when(imMessageList.oneself){
                 true -> {
                     fromLayout.visibility = View.GONE

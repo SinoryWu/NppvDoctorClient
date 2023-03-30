@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.work.*
 import com.hzdq.nppvdoctorclient.chat.ChatViewModel
 import com.hzdq.nppvdoctorclient.databinding.ActivityMainBinding
 import com.hzdq.nppvdoctorclient.fragment.*
@@ -25,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
@@ -40,25 +42,62 @@ class MainActivity : AppCompatActivity() {
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var mainViewModel: MainViewModel
     private val vm: ChatCommonViewModel by shareViewModels("sinory")
+
     private var destinationMap:Map<Fragment, MotionLayout>? = null
     private var tokenDialogUtil:TokenDialogUtil? = null
     private val TAG = "MainActivity"
+
+
+
+    override fun onStart() {
+        Log.d(TAG, "onStart: ")
+        if (shp.getFirstLoginIm()==false){
+            vm.registerListener()
+        }
+        super.onStart()
+    }
 
     override fun onDestroy() {
         if (!shp.getToken().equals("")){
             vm.unregisterTimeChange()
         }
-
+        if (shp.getFirstLoginIm()==false){
+            vm.unregisterListener()
+        }
         tokenDialogUtil?.disMissTokenDialog()
         ActivityCollector.removeActivity(this)
         super.onDestroy()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: ")
         ActivityCollector.addActivity(this)
         binding= DataBindingUtil.setContentView(this,R.layout.activity_main)
         shp = Shp(this)
         vm.setContext(applicationContext)
+        vm.registerActivityLifecycleCallbacks(application)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)  // 网络状态
+            .setRequiresBatteryNotLow(true)                 // 不在电量不足时执行
+            .setRequiresCharging(true)                      // 在充电时执行
+            .setRequiresStorageNotLow(true)                 // 不在存储容量不足时执行
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            constraints.setRequiresDeviceIdle(true) // 在待机状态下执行，需要 API 23
+        }else{ }
+
+
+        val workRequest =  PeriodicWorkRequest.Builder(MyWorker::class.java,1, TimeUnit.SECONDS)
+            .setConstraints(constraints.build())//
+            .build();
+        WorkManager.getInstance().enqueue(workRequest);//这串代码是加入任务队列的意思
+
+        if (shp.getFirstLoginIm() == false){
+            vm.initIm()
+            vm.loginIm()
+        }
+
+        val intent =intent
+
         if (shp.getToken().equals("")){
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -92,6 +131,10 @@ class MainActivity : AppCompatActivity() {
             addToList(mineFragment)
         } else {
             initFragment()
+            if (intent.getIntExtra("notification",0) == 1){
+                binding.chatIcon.motion.performClick()
+            }
+
         }
 
         if (shp.getRoleType() == 2){
@@ -111,6 +154,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        mainViewModel.getUserInfo()
 
         initView()
 
@@ -125,29 +169,39 @@ class MainActivity : AppCompatActivity() {
 
         vm.registerTimeChange()
 
+
+
+
     }
 
 
 
     private fun observer(){
+
         chatViewModel.chatCountTotal.observe(this, Observer {
-            Log.d(TAG, "chatCountTotal:$it ")
-            if (it>0){
-                binding.chatIcon.chatTotalCount.layout.visibility =  View.VISIBLE
-                if (it > 99){
-                    binding.chatIcon.chatTotalCount.content.text = "99+"
+            if (chatViewModel.isChat.value == false){
+                //判断是否在聊天界面
+                if (it > 0){
+                    binding.chatIcon.chatTotalCount.visibility =  View.VISIBLE
+//                if (it > 99){
+//                    binding.chatIcon.chatTotalCount.content.text = "99+"
+//                }else {
+//                    binding.chatIcon.chatTotalCount.content.text = "$it"
+//                }
                 }else {
-                    binding.chatIcon.chatTotalCount.content.text = "$it"
+                    binding.chatIcon.chatTotalCount.visibility =  View.GONE
                 }
             }else {
-                binding.chatIcon.chatTotalCount.layout.visibility =  View.GONE
+                binding.chatIcon.chatTotalCount.visibility =  View.GONE
             }
+
         })
 
         mainViewModel.netWorkTimeOut.observe(this, Observer {
             when(it){
                 0 -> {binding.networkTimeout.layout.visibility = View.GONE}
                 1 ->{binding.networkTimeout.layout.visibility = View.VISIBLE}
+                2 -> {binding.networkTimeout.layout.visibility = View.VISIBLE}
             }
         })
 
@@ -183,12 +237,31 @@ class MainActivity : AppCompatActivity() {
                         vm.getImToken()
                     }
                 }
-            }else {
-                mainViewModel.netWorkTimeOut.value = 0
-                mainViewModel.logOut()
+            }else  {
+                if (mainViewModel.netWorkTimeOut.value == 1){
+                    mainViewModel.netWorkTimeOut.value = 0
+                    mainViewModel.logOut()
+                }else if (mainViewModel.netWorkTimeOut.value == 2){
+                    mainViewModel.netWorkTimeOut.value = 0
+                    mainViewModel.getUserInfo()
+                }
+
             }
 
         }
+
+        mainViewModel.userInfoCode.observe(this, Observer {
+            when(it){
+                0 ->{}
+                1 ->{}
+                11->{
+                    tokenDialogUtil?.showTokenDialog()
+                }
+                else->{
+                    ToastUtil.showToast(this,mainViewModel.userInfoMsg.value)
+                }
+            }
+        })
 
     }
 
@@ -242,10 +315,12 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+
     }
 
     private fun initView(){
         binding.serviceIcon.motion.setOnClickListener {
+            chatViewModel.isChat.value = false
             serviceIcon()
             if (serviceFragment == null) {
 
@@ -257,6 +332,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.patientIcon.motion.setOnClickListener {
+            chatViewModel.isChat.value = false
             patientIcon()
             if (patientFragment == null) {
 
@@ -268,6 +344,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.doctorIcon.motion.setOnClickListener {
+            chatViewModel.isChat.value = false
             doctorIcon()
             if (doctorFragment == null) {
 
@@ -278,8 +355,19 @@ class MainActivity : AppCompatActivity() {
             showFragment(doctorFragment)
         }
 
+        // 获取华为 HMS 推送 token
+        HMSPushHelper.getInstance().getHMSToken(this)
         binding.chatIcon.motion.setOnClickListener {
+            chatViewModel.isChat.value = true
+            binding.chatIcon.chatTotalCount.visibility =  View.GONE
             chatIcon()
+            //登录环信
+            if (shp.getFirstLoginIm()==true){
+                vm.initIm()
+                vm.registerListener()
+                vm.loginIm()
+            }
+
             if (chatFragment == null) {
 
                 chatFragment = ChatFragment()
@@ -290,6 +378,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.mineIcon.motion.setOnClickListener {
+            chatViewModel.isChat.value = false
             mineIcon()
             if (mineFragment == null) {
 
@@ -300,6 +389,8 @@ class MainActivity : AppCompatActivity() {
             showFragment(mineFragment)
         }
     }
+
+
 
     private fun initFragment() {
         /* 默认显示home  fragment*/
@@ -403,4 +494,27 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+
+    override fun onSaveInstanceState(outState: Bundle) {
+
+        /*fragment不为空时 保存*/
+        if (serviceFragment != null) {
+            supportFragmentManager.putFragment(outState!!, "ServiceFragment", serviceFragment)
+        }
+        if (patientFragment != null) {
+            supportFragmentManager.putFragment(outState!!, "PatientFragment", patientFragment)
+        }
+        if (shp.getRoleType() == 2){
+            if (doctorFragment != null) {
+                supportFragmentManager.putFragment(outState!!, "DoctorFragment", doctorFragment)
+            }
+        }
+        if (chatFragment != null) {
+            supportFragmentManager.putFragment(outState!!, "ChatFragment", chatFragment)
+        }
+        if (mineFragment != null) {
+            supportFragmentManager.putFragment(outState!!, "MineFragment", mineFragment)
+        }
+        super.onSaveInstanceState(outState)
+    }
 }

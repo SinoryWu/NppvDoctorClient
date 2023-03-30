@@ -44,7 +44,7 @@ public class SideBar extends View {
 
     private String[] words = {"A", "B", "C", "D", "E", "F", "G", "H", "I",
             "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z"};
+            "W", "X", "Y", "Z","#"};
 
     /**
      * 如果我们在布局文件使用该类，将会用这个构造方法实例该类，如果没有就会崩溃
@@ -131,7 +131,6 @@ public class SideBar extends View {
                 float Y = event.getY();
                 int index = (int) (Y/itemHeight); //字母索引
                 if(index != touchIndex){
-                    Log.d("asdasd", "onTouchEvent: "+index);
                     touchIndex = index;  //当前的索引位置
                     invalidate(); //强制绘制会导致OnDraw()方法执行
                     if (onIndexChangeListener != null && touchIndex < words.length && touchIndex>= 0 ){

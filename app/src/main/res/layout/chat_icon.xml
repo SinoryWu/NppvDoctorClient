@@ -24,13 +24,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/icon_chat_false" />
 
-        <include
+        <View
             android:id="@+id/chat_total_count"
-            layout="@layout/layout_chat_count"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="4dp"
+            android:background="@drawable/chat_count_bg"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/img"
             app:layout_constraintStart_toStartOf="@+id/img" />
 

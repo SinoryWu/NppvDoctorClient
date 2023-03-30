@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:orientation="horizontal"
-
+    android:background="#ffffff"
     xmlns:tools="http://schemas.android.com/tools">
 
 
@@ -14,43 +14,57 @@
         android:layout_height="34dp"
         android:layout_marginStart="25dp"
         android:layout_gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:src="@mipmap/group_patient_head_icon" />
+
     <TextView
         android:id="@+id/item_group_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:maxEms="4"
-        tools:text="王王王"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="75dp"
+        android:ellipsize="end"
+        android:layout_marginStart="16dp"
+        android:maxLines="1"
         android:textColor="#ff000000"
         android:textSize="14sp"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/item_group_head"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="王王王" />
 
 
     <TextView
         android:id="@+id/item_group_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="医生"
-        android:layout_marginStart="135dp"
         android:layout_gravity="center_vertical"
         android:textColor="#ff888888"
+        android:layout_marginStart="15dp"
         android:textSize="12sp"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/item_group_name"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="医生" />
 
     <ImageView
+        android:id="@+id/item_group_arrow"
         android:layout_width="9dp"
         android:layout_height="16dp"
+        android:layout_marginEnd="24dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="342dp"
-        android:src="@mipmap/group_right_arrow"/>
+        android:src="@mipmap/group_right_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
         android:layout_gravity="bottom"
-        android:layout_width="match_parent"
         android:background="#E7E7E7"
-        android:layout_height="1dp"/>
-</FrameLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

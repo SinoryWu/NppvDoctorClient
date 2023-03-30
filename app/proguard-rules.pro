@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# 环信 push
+
+-keep class com.hyphenate.** {*;}
+-dontwarn  com.hyphenate.**
+
+-keep class com.luck.picture.lib.** { *; }
+
+#useCamerax
+-keep class com.luck.lib.camerax.** { *; }
+
+#useuCrop
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }
