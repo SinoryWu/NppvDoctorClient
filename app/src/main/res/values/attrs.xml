@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SharpView">
+        <attr name="paintColor" format="string"/>
+        <attr name="mHeight" format="integer"/>
+        <attr name="mWidth" format="integer"/>
+    </declare-styleable>
+</resources>

@@ -15,6 +15,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.hzdq.nppvdoctorclient.R
+import com.hzdq.nppvdoctorclient.body.BodySendMessage
+import com.hzdq.nppvdoctorclient.body.BodySendMsg
 import com.hzdq.nppvdoctorclient.databinding.FragmentVerificationCodeBinding
 import com.hzdq.nppvdoctorclient.login.LoginViewModel
 import com.hzdq.nppvdoctorclient.util.PhoneFormatCheckUtils
@@ -33,6 +35,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class VerificationCodeFragment : Fragment() {
 
+    private var bodySendMsg:BodySendMsg? = null
 
     private lateinit var binding:FragmentVerificationCodeBinding
     private lateinit var loginViewModel:LoginViewModel
@@ -66,8 +69,9 @@ class VerificationCodeFragment : Fragment() {
                 ToastUtil.showToast(requireContext(),"请输入正确的手机号码")
                 return@setOnClickListener
             }
-//            loginViewModel.sendMsg(3)
-//            loginViewModel.countTime.start()
+            bodySendMsg = BodySendMsg(5,loginViewModel.phone.value)
+            loginViewModel.sendMsg(bodySendMsg!!)
+            loginViewModel.countTime.start()
         }
 
         loginViewModel.timeCount.observe(requireActivity(), Observer {

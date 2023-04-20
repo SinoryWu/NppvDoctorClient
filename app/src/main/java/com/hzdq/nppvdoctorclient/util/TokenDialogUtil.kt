@@ -25,9 +25,6 @@ class TokenDialogUtil (val context: Context){
             })
             tokenDialog!!.show()
             tokenDialog?.setCanceledOnTouchOutside(false)
-        }else {
-            tokenDialog!!.show()
-            tokenDialog?.setCanceledOnTouchOutside(false)
         }
 
 
@@ -36,6 +33,7 @@ class TokenDialogUtil (val context: Context){
 
     fun disMissTokenDialog(){
         tokenDialog?.dismiss()
+        tokenDialog = null
     }
 
 

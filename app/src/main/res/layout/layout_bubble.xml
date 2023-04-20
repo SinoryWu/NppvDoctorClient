@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="98dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <com.lihang.ShadowLayout
+        android:id="@+id/cardView"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hl_cornerRadius="4dp"
+        app:hl_shadowColor="@color/shadow"
+        app:hl_strokeWith="5dp"
+        app:hl_shadowLimit="12dp"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/bubble_update"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="更新状态"
+                android:background="@drawable/bubble_textview_bg"
+                android:textColor="#ff585858"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/bubble_refund"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:text="退款"
+                android:background="@drawable/bubble_textview_bg"
+                android:textColor="#ff585858"
+                android:textSize="12sp"/>
+        </LinearLayout>
+    </com.lihang.ShadowLayout>
+
+    <com.hzdq.nppvdoctorclient.view.SharpView
+        android:layout_width="8dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
+        app:mHeight="4"
+        app:mWidth="8"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="20dp"
+        />
+
+</RelativeLayout>

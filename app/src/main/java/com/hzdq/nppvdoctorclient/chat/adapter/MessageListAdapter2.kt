@@ -28,7 +28,6 @@ import com.hzdq.nppvdoctorclient.util.DateFormatUtil
 import com.hzdq.nppvdoctorclient.util.SizeUtil
 import com.hzdq.nppvdoctorclient.util.TimeIntervalUtil
 import io.supercharge.shimmerlayout.ShimmerLayout
-import kotlin.math.absoluteValue
 import kotlin.math.max
 
 /**
@@ -92,6 +91,8 @@ class MessageListAdapter2(private val context:Context,val chatViewModel: ChatVie
 
         val time = itemView.findViewById<TextView>(R.id.item_chat_time)
         val layout = itemView.findViewById<ConstraintLayout>(R.id.item_chat_layout)
+
+        val bottomView = itemView.findViewById<View>(R.id.item_chat_bottom_view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -106,7 +107,9 @@ class MessageListAdapter2(private val context:Context,val chatViewModel: ChatVie
 
 
         if (holder.absoluteAdapterPosition == 0){
-            holder.layout.setPadding(0,SizeUtil.dip2px(context,10f),0,SizeUtil.dip2px(context,10f))
+            holder.bottomView.visibility = View.VISIBLE
+        }else {
+            holder.bottomView.visibility =View.GONE
         }
 
         if (holder.absoluteAdapterPosition != chatViewModel.messageList.value?.size!!-1){
@@ -117,6 +120,9 @@ class MessageListAdapter2(private val context:Context,val chatViewModel: ChatVie
                 holder.time.visibility = View.GONE
                 holder.time.text = ""
             }
+        }else {
+            holder.time.visibility = View.VISIBLE
+            holder.time.text = DateFormatUtil.likeWeChatTime(imMessageList.gmtCreate)
         }
 
         when(imMessageList.oneself){
@@ -191,7 +197,7 @@ class MessageListAdapter2(private val context:Context,val chatViewModel: ChatVie
                                 }
                             }
 
-                        }).into(holder.toPic)
+                        }).skipMemoryCache(true).into(holder.toPic)
 //                    holder.toContent.text = "[图片]"
                 }
 
@@ -293,7 +299,7 @@ class MessageListAdapter2(private val context:Context,val chatViewModel: ChatVie
                                 }
                             }
 
-                        }).into(holder.fromPic)
+                        }).skipMemoryCache(true).into(holder.fromPic)
 
 //
                 }
@@ -308,7 +314,7 @@ class MessageListAdapter2(private val context:Context,val chatViewModel: ChatVie
                         holder.fromType.text = "医助"
                     }
                     else -> {
-                        holder.fromHead.setImageResource(R.mipmap.chat_doctor_icon)
+                        holder.fromHead.setImageResource(R.mipmap.chat_patient_icon)
                         holder.fromType.text = ""
                     }
                 }

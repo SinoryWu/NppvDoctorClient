@@ -111,7 +111,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             sendMessageCode.value = 20
                         }
 
-                    }else if(response.body()?.code.equals("11")){
+                    }else if(response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         sendMessageCode.value = 11
                     }else {
                         sendMessageCode.value = response.body()?.code?.toInt()
@@ -204,7 +204,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                             messageCode.value = 20
                         }
 
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         messageCode.value = 11
                     }else {
                         messageCode.value = response.body()?.code?.toInt()
@@ -242,7 +242,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     readMsgMsg.value = response.body()?.msg
                     if (response.body()?.code.equals("1")){
                         readMsgCode.value = 1
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         readMsgCode.value = 11
                     }else {
                         readMsgCode.value = response.body()?.code?.toInt()
@@ -254,7 +254,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onFailure(call: Call<DataClassNoData>, t: Throwable) {
-                readMsgMsg.value = "获取消息列表网络请求失败"
+                readMsgMsg.value = "已读消息网络请求失败"
                 readMsgCode.value = 404
                 networkTimeOut.value = 3
             }
@@ -281,7 +281,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         picAddress.value  = response.body()?.data
                         fileCode.value = 1
 
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         fileCode.value = 11
                     }else {
                         fileCode.value = response.body()?.code?.toInt()
@@ -318,11 +318,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     groupMsg.value = response.body()?.msg
                     if (response.body()?.code.equals("1")){
-                        Log.d("asdasdadsa", "onResponse: ${response.body()?.data?.size}")
                         groupMemberList.value = response.body()?.data
                         groupCode.value = 1
 
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         groupCode.value = 11
                     }else {
                         groupCode.value = response.body()?.code?.toInt()
@@ -360,7 +359,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                         exitCode.value = 1
 
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         exitCode.value = 11
                     }else {
                         exitCode.value = response.body()?.code?.toInt()
@@ -386,6 +385,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     val doctorListCode = MutableLiveData(0)
     val doctorListMsg = MutableLiveData("")
     val doctorList = MutableLiveData<MutableList<DoctorList>>(ArrayList())
+    val doctorListSearch = MutableLiveData<MutableList<DoctorList>>(ArrayList())
     val uidList  = MutableLiveData<ArrayList<Int>>(ArrayList())
     val searchName = MutableLiveData("")
     fun getDoctorList(bodyDoctorList: BodyDoctorList){
@@ -411,7 +411,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         doctorListCode.value = 1
 
 
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         doctorListCode.value = 11
                     }else {
                         doctorListCode.value = response.body()?.code?.toInt()
@@ -493,7 +493,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         groupInvitationId.value = 1
 
 
-                    }else if (response.body()?.code.equals("11")){
+                    }else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         groupInvitationId.value = 11
 
                     }else {

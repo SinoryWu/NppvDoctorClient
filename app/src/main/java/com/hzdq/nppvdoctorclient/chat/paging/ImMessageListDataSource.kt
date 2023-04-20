@@ -46,7 +46,7 @@ class ImMessageListDataSource(private val context: Context):PageKeyedDataSource<
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, ImMessageList>
     ) {
-        Log.d("sadadasd", "onResponse:loadInitial ")
+
         //        retry = null //重置retry
         bodyImMessageList.groupId = shp.getGroupId()
         bodyImMessageList.index = index
@@ -63,7 +63,7 @@ class ImMessageListDataSource(private val context: Context):PageKeyedDataSource<
                     if (response.body()?.code.equals("1")){
 
                         val dataList = response.body()?.data?.list
-                        Log.d("sadadasd", "onResponse loadInitial:${response.body()?.data?.list?.size} ")
+
                         if (dataList != null && dataList.size>0){
 
                             dataList[dataList.size-1].id?.let { index = it }

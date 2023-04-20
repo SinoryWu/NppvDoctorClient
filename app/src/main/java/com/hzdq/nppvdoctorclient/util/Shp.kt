@@ -115,4 +115,6 @@ class Shp(val context: Context) {
         val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
         return sp.getString("doctorSearchName","")
     }
+
+
 }

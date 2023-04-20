@@ -51,10 +51,20 @@ class MineFragment : Fragment() {
             binding.hospital.text = it
         })
 
+        mainViewModel.userInfoCode.observe(requireActivity(), Observer {
+            if (it == 1){
+                if (shp.getRoleType() == 2){
+                    binding.type.text = mainViewModel.doctorTitle.value
+                }
+            }
+        })
         if (shp.getRoleType() == 2){
-            binding.type.text = "医生"
+
+            binding.head.setImageResource(R.mipmap.mine_head_doctor)
+
         }else {
             binding.type.text = "医助"
+            binding.head.setImageResource(R.mipmap.mine_head_bajie)
         }
     }
 

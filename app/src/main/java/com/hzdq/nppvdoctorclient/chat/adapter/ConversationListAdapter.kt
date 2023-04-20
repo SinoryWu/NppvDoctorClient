@@ -177,8 +177,10 @@ class ConversationListViewHolder(itemView: View):RecyclerView.ViewHolder(itemVie
             name.text = imConversationList.groupName
             if (imConversationList.lastMessageType == 1){
                 content.text = imConversationList.lastMessage
-            }else {
+            }else if (imConversationList.lastMessageType == 2) {
                 content.text = "[图片]"
+            }else {
+                content.text = ""
             }
             if (imConversationList.numberOfUnreadMessages == 0){
                 count.visibility = View.GONE
@@ -191,7 +193,12 @@ class ConversationListViewHolder(itemView: View):RecyclerView.ViewHolder(itemVie
                 }
             }
 
-            time.text = DateFormatUtil.getData(imConversationList.lastMsgTime)
+            if (imConversationList.lastMsgTime != null){
+                time.text = DateFormatUtil.getData(imConversationList.lastMsgTime)
+            }else {
+                time.text = DateFormatUtil.getData(imConversationList.gmtCreate)
+            }
+
         }
     }
 }

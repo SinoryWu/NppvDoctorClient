@@ -1,11 +1,13 @@
 package com.hzdq.nppvdoctorclient.mine
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.databinding.ActivityCancelledAccountBinding
+import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.mine.dialog.CancellationDialog
 import com.hzdq.nppvdoctorclient.util.ActivityCollector
 import com.hzdq.nppvdoctorclient.util.Shp
@@ -29,6 +31,7 @@ class CancelledAccountActivity : AppCompatActivity() {
 
         initView()
 
+        click()
 
     }
 
@@ -52,9 +55,28 @@ class CancelledAccountActivity : AppCompatActivity() {
     }
 
     private fun click() {
-//        binding.confirm.setOnClickListener {
+        binding.confirm.setOnClickListener {
 //            mineViewModel.getCancellation()
-//        }
+
+                    if (cancellationDialog == null){
+                        cancellationDialog = CancellationDialog(this,R.style.CustomDialog)
+                    }
+                    cancellationDialog?.show()
+                    cancellationDialog?.setCanceledOnTouchOutside(false)
+                    cancellationDialog?.setConfirm(object :CancellationDialog.ConfirmAction{
+                        override fun onRightClick() {
+                            shp.saveToSp("token", "")
+                            shp.saveToSp("uid", "")
+                            startActivity(
+                                Intent(this@CancelledAccountActivity,
+                                    LoginActivity::class.java)
+                            )
+                            ActivityCollector.finishAll()
+                        }
+
+                    })
+
+        }
 //
 //        mineViewModel.cancellationCode.observe(this, Observer {
 //            when(it){

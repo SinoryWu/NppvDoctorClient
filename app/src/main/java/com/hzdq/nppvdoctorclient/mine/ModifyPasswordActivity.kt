@@ -1,15 +1,21 @@
 package com.hzdq.nppvdoctorclient.mine
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.method.DigitsKeyListener
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.hzdq.nppvdoctorclient.R
+import com.hzdq.nppvdoctorclient.body.BodyModifyPassword
+import com.hzdq.nppvdoctorclient.body.BodySendMsg
 import com.hzdq.nppvdoctorclient.databinding.ActivityModifyPasswordBinding
+import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.util.*
 import kotlin.math.min
 
@@ -26,6 +32,7 @@ class ModifyPasswordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCollector.addActivity(this)
+        tokenDialogUtil = TokenDialogUtil(this)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_modify_password)
         mineViewModel = ViewModelProvider(this).get(MineViewModel::class.java)
         shp = Shp(this)
@@ -43,7 +50,28 @@ class ModifyPasswordActivity : AppCompatActivity() {
 
         binding.newPassword.content.text = "新密码"
         binding.repeatPassword.content.text = "重复密码"
+        val dataID = "qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM1234567890";
+        binding.newPassword.edit.setKeyListener(object : DigitsKeyListener(){
+            override fun getInputType(): Int {
+                return EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
+            }
 
+            override fun getAcceptedChars(): CharArray {
+                val  data =dataID.toCharArray();
+                return data
+            }
+        })
+
+        binding.repeatPassword.edit.setKeyListener(object : DigitsKeyListener(){
+            override fun getInputType(): Int {
+                return EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
+            }
+
+            override fun getAcceptedChars(): CharArray {
+                val  data =dataID.toCharArray();
+                return data
+            }
+        })
         binding.newPassword.edit.addTextChangedListener(object :TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -74,7 +102,13 @@ class ModifyPasswordActivity : AppCompatActivity() {
 
         })
 
+
+
         binding.confirm.setOnClickListener {
+            if (binding.code.text.toString().equals("")){
+                ToastUtil.showToast(this,"请输入验证码")
+                return@setOnClickListener
+            }
             if (mineViewModel.newPassword.value.equals("")){
                 ToastUtil.showToast(this,"请输入新密码")
                 return@setOnClickListener
@@ -84,7 +118,7 @@ class ModifyPasswordActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (mineViewModel.newPassword.value!!.length < 6){
+            if (mineViewModel.newPassword.value!!.length < 6 || mineViewModel.newPassword.value!!.length > 20){
                 ToastUtil.showToast(this,"密码长度6～20个字符，不能为纯数字或纯字母")
                 return@setOnClickListener
             }
@@ -97,7 +131,29 @@ class ModifyPasswordActivity : AppCompatActivity() {
                 ToastUtil.showToast(this,"密码不能为纯数字")
                 return@setOnClickListener
             }
+            val bodyModifyPassword = BodyModifyPassword(mineViewModel.repeatPassword.value,mineViewModel.newPassword.value,shp.getPhone(),binding.code.text.toString())
+//            val bodyModifyPassword = BodyModifyPassword(mineViewModel.repeatPassword.value,mineViewModel.newPassword.value,"15355090637",binding.code.text.toString())
+            mineViewModel.changePassword(bodyModifyPassword)
         }
+
+        mineViewModel.changeCode.observe(this, Observer {
+            when(it){
+                0->{}
+                1->{
+                    ToastUtil.showToast(this,"修改密码成功，请重新登录")
+                    shp.saveToSp("token", "")
+                    shp.saveToSp("uid", "")
+
+                    startActivity(
+                        Intent(applicationContext,
+                            LoginActivity::class.java)
+                    )
+                    ActivityCollector.finishAll()
+                }
+                11->{tokenDialogUtil?.showTokenDialog()}
+                else->{ToastUtil.showToast(this,mineViewModel.changeMsg.value)}
+            }
+        })
     }
 
 
@@ -106,10 +162,11 @@ class ModifyPasswordActivity : AppCompatActivity() {
      */
     private fun getCode(){
         binding.getCode.setOnClickListener {
-
-
-//            loginViewModel.sendMsg(3)
+            val bodySendMsg = BodySendMsg(6,shp.getPhone())
+//            val bodySendMsg = BodySendMsg(6,"15355090637")
             mineViewModel.countTime.start()
+            mineViewModel.sendMsg(bodySendMsg)
+
         }
 
         mineViewModel.timeCount.observe(this, Observer {
@@ -125,6 +182,15 @@ class ModifyPasswordActivity : AppCompatActivity() {
                 binding.getCode.isClickable = true
                 binding.getCode.setBackgroundResource(R.drawable.login_get_code_bg)
                 binding.getCode.text = "获取验证码"
+            }
+        })
+
+        mineViewModel.sendMsgCode.observe(this, Observer {
+            when(it){
+                0->{}
+                1->{ToastUtil.showToast(this,"验证码发送成功")}
+                11->{tokenDialogUtil?.showTokenDialog()}
+                else->{ToastUtil.showToast(this,mineViewModel.sendMsgMsg.value)}
             }
         })
     }

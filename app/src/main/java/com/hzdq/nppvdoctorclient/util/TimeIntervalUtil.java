@@ -17,8 +17,7 @@ public class TimeIntervalUtil {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date1 = format.parse(time1);
             Date date2 = format.parse(time2);
-            Log.d("asdsadsad", "time1: "+time1);
-            Log.d("asdsadsad", "time2: "+time2);
+
             long diff = Math.abs(date2.getTime() - date1.getTime());
 //            long diffSeconds = diff / 1000;
             long diffMinutes = diff / 60000;

@@ -8,9 +8,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.hzdq.nppvdoctorclient.R
+import com.hzdq.nppvdoctorclient.body.BodyVersion
 import com.hzdq.nppvdoctorclient.databinding.ActivityAboutBinding
+import com.hzdq.nppvdoctorclient.mine.dialog.UpdateDialog
 import com.hzdq.nppvdoctorclient.mine.dialog.VersionUpdateDialog
 import com.hzdq.nppvdoctorclient.util.ActivityCollector
 import com.hzdq.nppvdoctorclient.util.ToastUtil
@@ -26,17 +29,21 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var mineViewModel:MineViewModel
     private var tokenDialogUtil: TokenDialogUtil? = null
     private var versionUpdateDialog:VersionUpdateDialog? = null
+    private var updateDialog: UpdateDialog? = null
     override fun onDestroy() {
-        versionUpdateDialog?.dismiss()
         tokenDialogUtil?.disMissTokenDialog()
+        versionUpdateDialog?.dismiss()
         ActivityCollector.removeActivity(this)
         super.onDestroy()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCollector.addActivity(this)
+        tokenDialogUtil = TokenDialogUtil(this)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_about)
         mineViewModel = ViewModelProvider(this).get(MineViewModel::class.java)
+        val bodyVersion = BodyVersion(5,2,2)
+        mineViewModel.postVersion(bodyVersion)
         initView()
     }
 
@@ -55,6 +62,42 @@ class AboutActivity : AppCompatActivity() {
         binding.head.content.text = "关于"
         binding.head.back.setOnClickListener {
             finish()
+        }
+
+        mineViewModel.updateProgress.observe(this, Observer {
+            if (it==100){
+                versionUpdateDialog?.dismiss()
+                versionUpdateDialog = null
+            }
+        })
+
+        binding.versionUpdate.layout.setOnClickListener {
+            if (!mineViewModel.version.value!!.equals("")){
+                if (mineViewModel.version.value!!.equals(mineViewModel.getVerName(this))){
+                    ToastUtil.showToast(this,"当前已是最新版本")
+                    return@setOnClickListener
+                }
+                if (updateDialog == null){
+                    updateDialog = UpdateDialog(mineViewModel.version.value!!,this,R.style.CustomDialog)
+                }
+
+                updateDialog?.show()
+                updateDialog?.setCanceledOnTouchOutside(false)
+                updateDialog?.setConfirm(object :UpdateDialog.ConfirmAction{
+                    override fun onRightClick() {
+
+
+                        updateDialog?.dismiss()
+                        updateDialog = null
+
+                        if (!mineViewModel.version.value.equals(mineViewModel.getVerName(this@AboutActivity))){
+                            DownLoadVersionAppFile(mineViewModel.downLoadAddress.value!!,"${cacheDir}/NPPV管理端.apk")
+                        }
+                    }
+
+                })
+            }
+
         }
     }
 

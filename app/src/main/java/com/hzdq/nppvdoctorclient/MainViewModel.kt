@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.hzdq.nppvdoctorclient.dataclass.DataClassDoctorLoad
 import com.hzdq.nppvdoctorclient.dataclass.DataClassGeneralBoolean
 import com.hzdq.nppvdoctorclient.dataclass.DataClassUserInfo
 import com.hzdq.nppvdoctorclient.retrofit.RetrofitSingleton
@@ -42,7 +43,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                        logOutCode.value = 1
 
 
-                    }else if(response.body()?.code.equals("11")){
+                    }else if(response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         logOutCode.value = 11
                     }else {
                         logOutCode.value = response.body()?.code?.toInt()
@@ -71,6 +72,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val userInfoMsg = MutableLiveData("")
     val userName = MutableLiveData("")
     val hospitalName = MutableLiveData("")
+    val doctorTitle = MutableLiveData("")
     fun getUserInfo(){
         retrofitSingleton.api().getUserInfo().enqueue(object :Callback<DataClassUserInfo>{
             override fun onResponse(
@@ -84,12 +86,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         hospitalName.value = response.body()?.data?.hospitalName
                         userName.value = response.body()?.data?.name
                         shp.saveToSp("userName",response.body()?.data?.name!!)
-                        shp.saveToSpInt("uid",response.body()?.data?.uid!!)
+                        if (null == response.body()?.data?.mobile){
+                            shp.saveToSp("phone","")
+                        }else {
+                            shp.saveToSp("phone",response.body()?.data?.mobile!!)
+                        }
 
+
+                        shp.saveToSpInt("uid",response.body()?.data?.uid!!)
+                        if (response.body()?.data?.roleType == 2){
+//                            getDoctorLoad(shp.getUid())
+                            doctorTitle.value = response.body()?.data?.doctorDepartment+response.body()?.data?.doctorPosition
+                        }
                         userInfoCode.value = 1
 
 
-                    }else if(response.body()?.code.equals("11")){
+                    }else if(response.body()?.code.equals("11") || response.body()?.code.equals("8")){
                         userInfoCode.value = 11
                     }else {
                         userInfoCode.value = response.body()?.code?.toInt()
@@ -110,4 +122,46 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+
+
+    /**
+     * 获取医生详情
+     */
+    val doctorLoadCode = MutableLiveData(0)
+    val doctorLoadMsg = MutableLiveData("")
+
+    fun getDoctorLoad(uid:Int){
+        retrofitSingleton.api().getDoctorLoad(uid).enqueue(object :Callback<DataClassDoctorLoad>{
+            override fun onResponse(
+                call: Call<DataClassDoctorLoad>,
+                response: Response<DataClassDoctorLoad>
+            ) {
+                try {
+                    doctorLoadMsg.value = "${response.body()?.msg}"
+                    if (response.body()?.code.equals("1")){
+                        doctorTitle.value = response.body()?.data?.doctorDepartment+response.body()?.data?.doctorPosition
+
+                        doctorLoadCode.value = 1
+
+
+                    }else if(response.body()?.code.equals("11") || response.body()?.code.equals("8")){
+                        doctorLoadCode.value = 11
+                    }else {
+                        doctorLoadCode.value = response.body()?.code?.toInt()
+                    }
+                }catch (e: Exception){
+
+                    doctorLoadMsg.value = "错误！请求响应码：${response.code()}"
+                    doctorLoadCode.value = 200
+                }
+            }
+
+            override fun onFailure(call: Call<DataClassDoctorLoad>, t: Throwable) {
+                doctorLoadMsg.value = "获取医生信息网络请求失败"
+                doctorLoadCode.value = 404
+                netWorkTimeOut.value  = 3
+            }
+
+        })
+    }
 }

@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
-            android:text="聊天"
+            android:text="沟通"
             android:textColor="#B9BEBD"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -12,10 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.hzdq.nppvdoctorclient.H5DetailActivity
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.chat.adapter.GroupMemberAdapter
 import com.hzdq.nppvdoctorclient.chat.dialog.ExitGroupDialog
 import com.hzdq.nppvdoctorclient.databinding.ActivityGroupDetailBinding
+import com.hzdq.nppvdoctorclient.retrofit.URLCollection
 import com.hzdq.nppvdoctorclient.util.ActivityCollector
 import com.hzdq.nppvdoctorclient.util.Shp
 import com.hzdq.nppvdoctorclient.util.ToastUtil
@@ -23,6 +25,7 @@ import com.hzdq.nppvdoctorclient.util.TokenDialogUtil
 import com.hzdq.nppvdoctorclient.util.ViewClickDelay.clickDelay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.URL
 
 /**
  *@desc 群设置（详情）
@@ -54,7 +57,7 @@ class GroupDetailActivity : AppCompatActivity() {
         shp = Shp(this)
         chatViewModel.groupId.value = intent.getIntExtra("groupId", 0)
         chatViewModel.getGroupMembers(chatViewModel.groupId.value!!)
-        groupMemberAdapter = GroupMemberAdapter(shp.getUserName()!!)
+        groupMemberAdapter = GroupMemberAdapter(shp.getUserName()!!,shp.getRoleType())
         initView()
     }
 
@@ -134,6 +137,21 @@ class GroupDetailActivity : AppCompatActivity() {
             layoutManager = linearLayoutManager
         }
         (binding.recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+
+        groupMemberAdapter!!.setOnItemClickListener(object :GroupMemberAdapter.OnItemClickListener{
+            override fun onItemClick(type: Int, id: Int) {
+                val intent = Intent(this@GroupDetailActivity,H5DetailActivity::class.java)
+                if (type == 1){
+                    intent.putExtra("title","医生详情")
+                    intent.putExtra("path",URLCollection.getDoctorDetail(shp,id))
+                }else {
+                    intent.putExtra("title","患者详情")
+                    intent.putExtra("path",URLCollection.getPatientDetail(shp,id))
+                }
+                startActivity(intent)
+            }
+
+        })
 
         binding.exitGroup.setOnClickListener {
 

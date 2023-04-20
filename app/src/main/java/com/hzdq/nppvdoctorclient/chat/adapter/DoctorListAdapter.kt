@@ -1,13 +1,11 @@
 package com.hzdq.nppvdoctorclient.chat.adapter
 
+import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.CheckBox
-import android.widget.FrameLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -56,7 +54,7 @@ class DoctorListAdapter(val chatViewModel: ChatViewModel):ListAdapter<DoctorList
     private var mClickListener: OnItemClickListener? = null
     //设置回调接口
     interface OnItemClickListener {
-        fun onItemClick()
+        fun onItemClick(isCheck:Boolean)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -72,16 +70,31 @@ class DoctorListAdapter(val chatViewModel: ChatViewModel):ListAdapter<DoctorList
         val word = dataItem.pinyin!!.substring(0,1)
         holder.word.text = word
 
+        when(dataItem.roleType){
+            2 -> {
+                holder.type.text = "医生"
+                holder.head.setImageResource(R.mipmap.group_doctor_head_icon)
+            }
+            else->{
+                holder.type.text = "医助"
+                holder.head.setImageResource(R.mipmap.group_bajie_icon)
+            }
+        }
         holder.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked){
                 chatViewModel.groupInvitationListSize.value = chatViewModel.groupInvitationListSize.value!! + 1
                 bodyGroupInvitation = BodyGroupInvitation(chatViewModel.groupId.value,dataItem.uid,dataItem.userType)
                 chatViewModel.groupInvitationList.value!!.add(bodyGroupInvitation!!)
+
             }else {
                 chatViewModel.groupInvitationListSize.value = chatViewModel.groupInvitationListSize.value!! - 1
                 bodyGroupInvitation = BodyGroupInvitation(1,dataItem.uid,dataItem.userType)
                 chatViewModel.groupInvitationList.value!!.remove(bodyGroupInvitation!!)
             }
+        }
+
+        holder.checkBox.setOnClickListener {
+            mClickListener?.onItemClick(holder.checkBox.isChecked)
         }
         if (position == 0){  //若每种信息字母的第一行显示
             holder.wordLayout.setVisibility(View.VISIBLE)
@@ -109,6 +122,8 @@ class DoctorListAdapter(val chatViewModel: ChatViewModel):ListAdapter<DoctorList
     }
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.item_add_doctor_name)
+        val type = itemView.findViewById<TextView>(R.id.item_add_doctor_type)
+        val head = itemView.findViewById<ImageView>(R.id.item_add_doctor_head)
         val wordLayout = itemView.findViewById<FrameLayout>(R.id.item_add_doctor_word_layout)
         val word = itemView.findViewById<TextView>(R.id.item_add_doctor_word)
         val checkBox = itemView.findViewById<CheckBox>(R.id.item_add_doctor_checkBox)

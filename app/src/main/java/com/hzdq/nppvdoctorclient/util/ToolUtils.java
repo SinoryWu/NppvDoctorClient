@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.util.Log;
 
 /**
  * Time:2023/3/29
@@ -101,7 +102,12 @@ public class ToolUtils {
         try {
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             Ringtone r = RingtoneManager.getRingtone(mContext, notification);
-            r.play();
+
+
+            if (!r.isPlaying()){
+                r.play();
+            }
+
         } catch (Exception ex) {
         }
     }

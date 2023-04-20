@@ -16,7 +16,10 @@ data class DataClassUserInfo(
 data class DataUserInfo(
     var hospitalName: String?,
     var name: String?,
+    var mobile: String?,
     var roleType: Int?,
     var token: String?,
-    var uid: Int?
+    var uid: Int?,
+    var doctorDepartment:String?,
+    var doctorPosition:String
 )

@@ -16,6 +16,9 @@ interface Api {
     //手机号验证码登录
     @POST("/hx_app/doctor/app/user/auth/loginPhone")
     fun loginVerificationCode(@Body bodyLoginVerificationCode: BodyLoginVerificationCode):Call<DataClassLogin>
+    //发送短信验证码
+    @POST("/hx_app/base/sms/seed")
+    fun sendMsg(@Body bodySendMsg: BodySendMsg):Call<DataClassNoData>
     //登出
     @GET("/hx_app/doctor/app/user/logout")
     fun logOut():Call<DataClassGeneralBoolean>
@@ -56,4 +59,13 @@ interface Api {
     //拉人入群
     @POST("/hx_app/doctor/app/im/groupInvitation")
     fun groupInvitation(@Body bodyGroupInvitation: BodyGroupInvitation):Call<DataClassNoData>
+    //获取医生详情
+    @GET("/hx_app/doctor/app/doctor/user/load")
+    fun getDoctorLoad(@Query("uid") uid:Int):Call<DataClassDoctorLoad>
+    //修改密码
+    @POST("/hx_app/doctor/app/user/changePassword")
+    fun changePassword(@Body bodyModifyPassword: BodyModifyPassword):Call<DataClassGeneralBoolean>
+    //获取最新版本
+    @POST("/hx_app/app/version/getTheLatestVersion")
+    fun postLatestVersion(@Body bodyVersion: BodyVersion):Call<DataClassVersion>
 }

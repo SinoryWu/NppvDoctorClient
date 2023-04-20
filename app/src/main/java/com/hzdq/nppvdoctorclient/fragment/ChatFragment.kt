@@ -177,7 +177,8 @@ class ChatFragment : Fragment() {
                 intent.putExtra("groupThirdPartyId",groupThirdPartyId)
                 intent.putExtra("groupName",groupName)
                 intent.putExtra("joinState",joinState)
-                permission(intent)
+                startActivityForResult(intent,CHAT_REQUEST_CODE)
+//                permission(intent)
 
             }
 
@@ -237,7 +238,7 @@ class ChatFragment : Fragment() {
         ).request{allGrand,_,_ ->
             if (allGrand){
 
-                startActivityForResult(intent,CHAT_REQUEST_CODE)
+
             }else{
                 ToastUtil.showToast(requireContext(),"未打开相应权限")
             }
@@ -252,6 +253,7 @@ class ChatFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CHAT_REQUEST_CODE){
+
             chatViewModel.resetConversationListQuery()
             if (resultCode == 20){
                 ToastUtil.showToast(requireContext(),"已退出群聊")

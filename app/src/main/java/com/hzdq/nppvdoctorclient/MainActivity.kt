@@ -15,13 +15,27 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.work.*
+import com.hyphenate.EMMessageListener
+import com.hyphenate.chat.EMClient
+import com.hyphenate.chat.EMCustomMessageBody
+import com.hzdq.nppvdoctorclient.body.BodyVersion
 import com.hzdq.nppvdoctorclient.chat.ChatViewModel
 import com.hzdq.nppvdoctorclient.databinding.ActivityMainBinding
+import com.hzdq.nppvdoctorclient.dataclass.DataClassReceiver
+import com.hzdq.nppvdoctorclient.dataclass.FromUser
+import com.hzdq.nppvdoctorclient.dataclass.ImMessageList
 import com.hzdq.nppvdoctorclient.fragment.*
 import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.mine.MineViewModel
+import com.hzdq.nppvdoctorclient.mine.dialog.UpdateDialog
+import com.hzdq.nppvdoctorclient.mine.dialog.VersionUpdateDialog
 import com.hzdq.nppvdoctorclient.util.*
 import com.hzdq.viewmodelshare.shareViewModels
+import com.liulishuo.filedownloader.BaseDownloadTask
+import com.liulishuo.filedownloader.FileDownloadListener
+import com.liulishuo.filedownloader.FileDownloader
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -46,25 +60,36 @@ class MainActivity : AppCompatActivity() {
     private var destinationMap:Map<Fragment, MotionLayout>? = null
     private var tokenDialogUtil:TokenDialogUtil? = null
     private val TAG = "MainActivity"
-
-
+    private var updateDialog: UpdateDialog? = null
+    private var versionUpdateDialog: VersionUpdateDialog? = null
 
     override fun onStart() {
+
         Log.d(TAG, "onStart: ")
         if (shp.getFirstLoginIm()==false){
             vm.registerListener()
+//            EMClient.getInstance().chatManager().addMessageListener(msgListener);
+
         }
         super.onStart()
     }
 
+    var msgListener = EMMessageListener { msgList ->
+        FileUtil.writeLog("${getExternalFilesDir("log")}/2023-04-06","收到消息--${(msgList[msgList.size-1].body as EMCustomMessageBody).params}")
+
+
+    }// 收到消息，遍历消息队列，解析和显示。
     override fun onDestroy() {
         if (!shp.getToken().equals("")){
             vm.unregisterTimeChange()
         }
         if (shp.getFirstLoginIm()==false){
             vm.unregisterListener()
+//            EMClient.getInstance().chatManager().removeMessageListener(msgListener);
         }
         tokenDialogUtil?.disMissTokenDialog()
+        updateDialog?.dismiss()
+        versionUpdateDialog?.dismiss()
         ActivityCollector.removeActivity(this)
         super.onDestroy()
     }
@@ -72,10 +97,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
         ActivityCollector.addActivity(this)
+        tokenDialogUtil = TokenDialogUtil(this)
         binding= DataBindingUtil.setContentView(this,R.layout.activity_main)
         shp = Shp(this)
         vm.setContext(applicationContext)
-        vm.registerActivityLifecycleCallbacks(application)
+
+
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)  // 网络状态
             .setRequiresBatteryNotLow(true)                 // 不在电量不足时执行
@@ -94,8 +121,14 @@ class MainActivity : AppCompatActivity() {
         if (shp.getFirstLoginIm() == false){
             vm.initIm()
             vm.loginIm()
+
+
+
         }
 
+
+        vm.registerActivityLifecycleCallbacks(application)
+        vm.registerTimeChange()
         val intent =intent
 
         if (shp.getToken().equals("")){
@@ -107,14 +140,77 @@ class MainActivity : AppCompatActivity() {
         mineViewModel = ViewModelProvider(this).get(MineViewModel::class.java)
         chatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        if (shp.getRoleType() != 2){
+        if (shp.getRoleType() != 3){
             binding.doctorIcon.motion.visibility = View.GONE
         }
+
+
+
+        val bodyVersion = BodyVersion(5, 2, 2)
+        mineViewModel.postVersion(bodyVersion)
+
+        mineViewModel.versionCode.observe(this, Observer {
+            when (it) {
+                0 -> {
+                }
+                1 -> {
+                    if (!mineViewModel.version.value!!.equals("")) {
+                        if (!mineViewModel.version.value!!.equals(
+                                mineViewModel.getVerName(this)
+                            )
+                        ) {
+                            if (updateDialog == null) {
+                                updateDialog = UpdateDialog(
+                                    mineViewModel.version.value!!,
+                                    this,
+                                    R.style.CustomDialog
+                                )
+                                updateDialog?.show()
+                                updateDialog?.setCanceledOnTouchOutside(false)
+                                updateDialog?.setConfirm(object : UpdateDialog.ConfirmAction {
+                                    override fun onRightClick() {
+
+
+                                        updateDialog?.dismiss()
+                                        updateDialog = null
+
+
+                                        if (!mineViewModel.version.value.equals(
+                                                mineViewModel.getVerName(
+                                                    this@MainActivity
+                                                )
+                                            )
+                                        ) {
+                                            DownLoadVersionAppFile(
+                                                mineViewModel.downLoadAddress.value!!,
+                                                "${cacheDir}/NPPV管理端.apk"
+                                            )
+
+                                        }
+                                    }
+
+                                })
+                            }
+                        }
+                    }
+
+
+                }
+                11 -> {
+                    tokenDialogUtil?.showTokenDialog()
+                }
+                404 -> {
+                    binding.networkTimeout.layout.visibility = View.VISIBLE
+                    ToastUtil.showToast(this, mineViewModel.versionMsg.value)
+                    mineViewModel.versionCode.value = 0
+                }
+            }
+        })
 
         if (savedInstanceState != null){
             serviceFragment = supportFragmentManager.getFragment(savedInstanceState, "ServiceFragment")!!
             patientFragment = supportFragmentManager.getFragment(savedInstanceState, "PatientFragment")!!
-            if (shp.getRoleType() == 2){
+            if (shp.getRoleType() == 3){
                 doctorFragment = supportFragmentManager.getFragment(savedInstanceState, "DoctorFragment")!!
             }
             chatFragment = supportFragmentManager.getFragment(savedInstanceState, "ChatFragment")!!
@@ -123,7 +219,7 @@ class MainActivity : AppCompatActivity() {
             addToList(serviceFragment)
             addToList(patientFragment)
 
-            if (shp.getRoleType() == 2){
+            if (shp.getRoleType() == 3){
                 addToList(doctorFragment)
 
             }
@@ -137,7 +233,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        if (shp.getRoleType() == 2){
+        if (shp.getRoleType() == 3){
             destinationMap = mapOf(
                 serviceFragment to binding.serviceIcon.motion,
                 patientFragment to binding.patientIcon.motion,
@@ -162,12 +258,11 @@ class MainActivity : AppCompatActivity() {
         observer()
 
         vm.getImAppInfo()
-        if (System.currentTimeMillis() - shp.getTokenTimeMillis()!! > 1739000){
-            Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:请求一次")
-            vm.getImToken()
-        }
+        vm.getImToken()
 
-        vm.registerTimeChange()
+
+
+
 
 
 
@@ -263,6 +358,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+
+
     }
 
     private fun logOut(){
@@ -307,6 +404,9 @@ class MainActivity : AppCompatActivity() {
                     shp.saveToSp("token","")
                     startActivity(Intent(this,LoginActivity::class.java))
                     ActivityCollector.finishAll()
+                }
+                11->{
+                    tokenDialogUtil?.showTokenDialog()
                 }
                 else -> {
                     ToastUtil.showToast(this,mainViewModel.logOutMsg.value)
@@ -363,9 +463,13 @@ class MainActivity : AppCompatActivity() {
             chatIcon()
             //登录环信
             if (shp.getFirstLoginIm()==true){
-                vm.initIm()
-                vm.registerListener()
-                vm.loginIm()
+                if (!shp.getAppKey().equals("")){
+                    vm.initIm()
+
+                    vm.loginIm()
+                    vm.registerListener()
+                }
+
             }
 
             if (chatFragment == null) {
@@ -401,7 +505,7 @@ class MainActivity : AppCompatActivity() {
 
         addFragment(patientFragment as PatientFragment)
 
-        if (shp.getRoleType() == 2){
+        if (shp.getRoleType() == 3){
             addFragment(doctorFragment as DoctorFragment)
         }
         addFragment(chatFragment as ChatFragment)
@@ -504,7 +608,7 @@ class MainActivity : AppCompatActivity() {
         if (patientFragment != null) {
             supportFragmentManager.putFragment(outState!!, "PatientFragment", patientFragment)
         }
-        if (shp.getRoleType() == 2){
+        if (shp.getRoleType() == 3){
             if (doctorFragment != null) {
                 supportFragmentManager.putFragment(outState!!, "DoctorFragment", doctorFragment)
             }
@@ -517,4 +621,87 @@ class MainActivity : AppCompatActivity() {
         }
         super.onSaveInstanceState(outState)
     }
+    private var exitTime: Long = 0
+    override fun onBackPressed() {
+        exit()
+    }
+    /**
+     * 按两次退出程序
+     */
+    private fun exit() {
+        if (System.currentTimeMillis() - exitTime > 2000) {
+            ToastUtil.showToast(this,"再按一次退出程序")
+            exitTime = System.currentTimeMillis()
+        } else {
+            finish()
+            System.exit(0)
+        }
+    }
+
+
+    /**
+     * 下载更新包到本地
+     * @param url
+     * @param path
+     */
+    private fun DownLoadVersionAppFile(url: String, path: String) {
+        versionUpdateDialog = VersionUpdateDialog(this, mineViewModel, this)
+        versionUpdateDialog?.show()
+        versionUpdateDialog?.setCanceledOnTouchOutside(false)
+        FileDownloader.getImpl().create(url).setPath(path)
+            .setListener(object : FileDownloadListener() {
+                override fun pending(task: BaseDownloadTask, soFarBytes: Int, totalBytes: Int) {
+
+                }
+
+                override fun progress(task: BaseDownloadTask, soFarBytes: Int, totalBytes: Int) {
+
+                    mineViewModel.updateProgress.value =
+                        ((soFarBytes.toDouble() / totalBytes.toDouble()).toDouble() * 100).toInt()
+
+                }
+
+                override fun completed(task: BaseDownloadTask) {
+                    mineViewModel.updateProgress.value = 100
+
+                    if (fileIsExists(path)) {
+                        installApk(path)
+                        ActivityCollector.finishAll()
+                    }
+                }
+
+                override fun paused(task: BaseDownloadTask, soFarBytes: Int, totalBytes: Int) {
+
+                }
+
+                override fun error(task: BaseDownloadTask, e: Throwable) {
+                    mineViewModel.updateProgress.value = 100
+                    ToastUtil.showToast(this@MainActivity, "更新包下载失败")
+                }
+
+                override fun warn(task: BaseDownloadTask) {
+
+                }
+            }).start()
+    }
+
+    /**
+     * 判断文件是否存在
+     * @param filePath
+     * @return
+     */
+    private fun fileIsExists(filePath: String): Boolean {
+        try {
+            val f = File(filePath)
+            if (!f.exists()) {
+                return false
+            }
+        } catch (e: Exception) {
+            return false
+        }
+        return true
+    }
+
+
+
 }

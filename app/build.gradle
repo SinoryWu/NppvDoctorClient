@@ -14,6 +14,7 @@ android {
         applicationId "com.hzdq.nppvdoctorclient"
         minSdkVersion 21
         targetSdkVersion 31
+        versionCode 1
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -23,7 +24,7 @@ android {
         release {
             keyAlias 'key0'
             keyPassword 'hzdq1308'
-            storeFile file('C:/nppvdoctor.jks')
+            storeFile file('D:/working/NPPVDoctorClient/app/nppvdoctor.jks')
             storePassword 'hzdq1308'
             v1SigningEnabled true
             v2SigningEnabled true
@@ -117,7 +118,7 @@ dependencies {
 
 
     implementation 'com.adair.android:okhttp:1.0.2'
-
+    implementation 'com.github.lihangleo2:ShadowLayout:3.2.4'
 
     //环信IM sdk
     implementation 'io.hyphenate:hyphenate-chat:4.0.0'

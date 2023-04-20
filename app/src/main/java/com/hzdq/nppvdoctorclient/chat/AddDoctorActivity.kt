@@ -214,12 +214,15 @@ class AddDoctorActivity : AppCompatActivity() {
         //点击键盘搜索按钮后
         binding.search.setOnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                chatViewModel.searchName.value = binding.search.text.toString()
-                //Perform Code
+                if (!binding.search.text.toString().equals("")){
+                    chatViewModel.searchName.value = binding.search.text.toString()
+                    //Perform Code
                     HideKeyboard.hideKeyboard(v,this)
-                chatViewModel.doctorList.value!!.clear()
-                bodyDoctorList = BodyDoctorList(null,chatViewModel.searchName.value,1,1000,null)
-                chatViewModel.getDoctorList(bodyDoctorList!!)
+                    chatViewModel.doctorList.value!!.clear()
+                    bodyDoctorList = BodyDoctorList(null,chatViewModel.searchName.value,1,1000,null)
+                    chatViewModel.getDoctorList(bodyDoctorList!!)
+                }
+
 
             }
             false
@@ -288,6 +291,20 @@ class AddDoctorActivity : AppCompatActivity() {
 
         })
 
+        doctorListAdapter?.setOnItemClickListener(object :DoctorListAdapter.OnItemClickListener{
+            override fun onItemClick(isCheck:Boolean) {
+                if (isCheck){
+                    chatViewModel.searchName.value = binding.search.text.toString()
+                    //Perform Code
+                    HideKeyboard.hideKeyboard(window.decorView,this@AddDoctorActivity)
+                    chatViewModel.doctorList.value!!.clear()
+                    bodyDoctorList = BodyDoctorList(null,chatViewModel.searchName.value,1,1000,null)
+                    chatViewModel.getDoctorList(bodyDoctorList!!)
+                }
+
+            }
+
+        })
 
 
 

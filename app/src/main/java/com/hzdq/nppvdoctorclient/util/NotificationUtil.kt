@@ -4,13 +4,17 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.hzdq.nppvdoctorclient.MainActivity
 import com.hzdq.nppvdoctorclient.R
+
 
 /**
  *Time:2023/3/29
@@ -39,7 +43,7 @@ object NotificationUtil {
           * IMPORTANCE_DEFAULT 开启通知，不会弹出，发出提示音，状态栏中显示
           * IMPORTANCE_HIGH 开启通知，会弹出，发出提示音，状态栏中显示
           */
-            val channel = NotificationChannel(channelId, "chat", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(channelId, "chat", NotificationManager.IMPORTANCE_HIGH)
             //设置该通道的描述（可以不写）
             //channel.setDescription("重要消息，请不要关闭这个通知。");
             //是否绕过勿打扰模式
@@ -49,7 +53,7 @@ object NotificationUtil {
             //闪关灯的灯光颜色
             channel.lightColor = Color.RED
             //桌面launcher的消息角标
-            channel.canShowBadge()
+//            channel.canShowBadge()
             //设置是否应在锁定屏幕上显示此频道的通知
             //channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             if (isVibrate) {
@@ -80,13 +84,13 @@ object NotificationUtil {
             nc.setContentText("${name}：[图片]")
         }
         //设置通知的小图标
-        nc.setSmallIcon(R.mipmap.ic_launcher)
+        nc.setSmallIcon(R.mipmap.app_icon)
         //设置通知的大图标
-        nc.setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
+        nc.setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.app_icon))
         //设定通知显示的时间
         nc.setWhen(System.currentTimeMillis())
         //设置通知的优先级
-        nc.priority = NotificationCompat.PRIORITY_MAX
+        nc.priority = NotificationCompat.PRIORITY_HIGH
         //设置点击通知之后通知是否消失
         nc.setAutoCancel(true)
         //点击通知打开软件
@@ -100,7 +104,46 @@ object NotificationUtil {
         val notification = nc.build()
         //5.发送通知
         manager.notify(1, notification)
-
+         Log.d("xiangling", "响铃2 ")
 
     }
+
+    private fun createNotificationChannel(
+        channelID: String,
+        channelNAME: String,
+        level: Int,
+        context: Context
+    ): String? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(channelID, channelNAME, level)
+            manager.createNotificationChannel(channel)
+            channelID
+        } else {
+            null
+        }
+    }
+
+    fun notification2(context: Context,content: String){
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+        val channelId = createNotificationChannel(
+            "100",
+            "chat",
+            NotificationManager.IMPORTANCE_HIGH,
+            context
+        )
+        val notification: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId!!)
+            .setContentTitle("NPPV管理端")
+            .setContentText(content)
+            .setContentIntent(pendingIntent)
+            .setSmallIcon(R.mipmap.app_icon)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.notify(100, notification.build());
+    }
+
+
 }

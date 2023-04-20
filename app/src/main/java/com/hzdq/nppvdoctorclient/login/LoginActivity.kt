@@ -161,6 +161,7 @@ class LoginActivity : AppCompatActivity() {
             when(it){
                 0 -> {}
                 1 -> {
+
                     startActivity(Intent(this,MainActivity::class.java))
                     finish()
                 }
@@ -170,14 +171,22 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.netWorkTimeOut.observe(this, Observer {
+//        loginViewModel.netWorkTimeOut.observe(this, Observer {
+//            when(it){
+//                0 -> {binding.networkTimeout.layout.visibility = View.GONE}
+//                1 ->{binding.networkTimeout.layout.visibility = View.VISIBLE}
+//                2 ->{binding.networkTimeout.layout.visibility = View.VISIBLE}
+//            }
+//        })
+
+
+        loginViewModel.sendMsgCode.observe(this, Observer {
             when(it){
-                0 -> {binding.networkTimeout.layout.visibility = View.GONE}
-                1 ->{binding.networkTimeout.layout.visibility = View.VISIBLE}
-                2 ->{binding.networkTimeout.layout.visibility = View.VISIBLE}
+                0->{}
+                1->{ToastUtil.showToast(this,"验证码发送成功")}
+                else->{ToastUtil.showToast(this,loginViewModel.sendMsgMsg.value)}
             }
         })
-
 
     }
 
@@ -226,18 +235,18 @@ class LoginActivity : AppCompatActivity() {
             login()
         }
 
-        binding.networkTimeout.button.setOnClickListener {
-            when(loginViewModel.netWorkTimeOut.value){
-                1 -> {
-                    loginViewModel.netWorkTimeOut.value = 0
-                    loginViewModel.loginPassword(bodyLoginPassword!!)
-                }
-                2 -> {
-                    loginViewModel.netWorkTimeOut.value = 0
-                    loginViewModel.loginVerificationCode(bodyLoginVerificationCode!!)
-                }
-            }
-        }
+//        binding.networkTimeout.button.setOnClickListener {
+//            when(loginViewModel.netWorkTimeOut.value){
+//                1 -> {
+//                    loginViewModel.netWorkTimeOut.value = 0
+//                    loginViewModel.loginPassword(bodyLoginPassword!!)
+//                }
+//                2 -> {
+//                    loginViewModel.netWorkTimeOut.value = 0
+//                    loginViewModel.loginVerificationCode(bodyLoginVerificationCode!!)
+//                }
+//            }
+//        }
     }
 
 

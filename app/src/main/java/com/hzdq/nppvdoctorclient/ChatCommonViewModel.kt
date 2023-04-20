@@ -17,6 +17,7 @@ import com.google.gson.Gson
 import com.huawei.hms.framework.common.ContextCompat.registerReceiver
 import com.huawei.hms.utils.UIUtil.isBackground
 import com.hyphenate.EMCallBack
+import com.hyphenate.EMConnectionListener
 import com.hyphenate.EMGroupChangeListener
 import com.hyphenate.EMMessageListener
 import com.hyphenate.chat.EMClient
@@ -25,11 +26,9 @@ import com.hyphenate.chat.EMMucSharedFile
 import com.hyphenate.chat.EMOptions
 import com.hyphenate.push.EMPushConfig
 import com.hzdq.nppvdoctorclient.dataclass.*
+import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.retrofit.RetrofitSingleton
-import com.hzdq.nppvdoctorclient.util.DateUtil
-import com.hzdq.nppvdoctorclient.util.NotificationUtil
-import com.hzdq.nppvdoctorclient.util.Shp
-import com.hzdq.nppvdoctorclient.util.ToolUtils
+import com.hzdq.nppvdoctorclient.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,13 +59,18 @@ class ChatCommonViewModel : ViewModel() {
         retrofitSingleton = RetrofitSingleton.getInstance(ctx)
     }
 
-    private var activityCount = 0
+    var activityCount = 0
     fun registerActivityLifecycleCallbacks(application: Application){
         application.registerActivityLifecycleCallbacks(object :Application.ActivityLifecycleCallbacks{
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
             override fun onActivityStarted(activity: Activity) {
-                activityCount++
+                Log.d(TAG, "onActivityStarted: ${activity.localClassName}")
+                if (!activity.localClassName.equals("login.LoginActivity")){
+                    activityCount++
+                }
+
+                Log.d(TAG, "activityCount start: $activityCount")
             }
 
             override fun onActivityResumed(activity: Activity) {
@@ -78,7 +82,13 @@ class ChatCommonViewModel : ViewModel() {
             }
 
             override fun onActivityStopped(activity: Activity) {
-                activityCount--
+
+                if (!activity.localClassName.equals("login.LoginActivity")){
+                    activityCount--
+                }
+
+
+                Log.d(TAG, "activityCount stop: $activityCount")
             }
 
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
@@ -138,7 +148,7 @@ class ChatCommonViewModel : ViewModel() {
                         }
                         appInfoCode.value = 1
 
-                    } else if (response.body()?.code.equals("11")) {
+                    } else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")) {
                         appInfoCode.value = 11
                     } else {
                         appInfoCode.value = response.body()?.code?.toInt()
@@ -183,7 +193,7 @@ class ChatCommonViewModel : ViewModel() {
                             loginIm()
                         }
                         imTokenCode.value = 1
-                    } else if (response.body()?.code.equals("11")) {
+                    } else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")) {
                         imTokenCode.value = 11
                     } else {
                         imTokenCode.value = response.body()?.code?.toInt()
@@ -229,6 +239,7 @@ class ChatCommonViewModel : ViewModel() {
             when (intent.action) {
                 Intent.ACTION_TIME_TICK -> {
                     //每过一分钟 触发
+
                     if (System.currentTimeMillis() - shp.getTokenTimeMillis()!! > 1739000) {
                         Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:请求一次")
                         chatCommonViewModel.getImToken()
@@ -250,12 +261,14 @@ class ChatCommonViewModel : ViewModel() {
         // 注册消息监听
         emClient?.chatManager()?.addMessageListener(msgListener);
         emClient?.groupManager()?.addGroupChangeListener(groupListener);
+        emClient?.addConnectionListener(connectionListener)
     }
 
     fun unregisterListener() {
         // 解注册消息监听
         emClient?.chatManager()?.removeMessageListener(msgListener);
         emClient?.groupManager()?.removeGroupChangeListener(groupListener);
+        emClient?.removeConnectionListener(connectionListener)
     }
 
     fun initIm() {
@@ -389,7 +402,7 @@ class ChatCommonViewModel : ViewModel() {
     val imageList = MutableLiveData<MutableList<String>>(ArrayList())
     val groupThirdPartyId = MutableLiveData("")
     var msgListener = EMMessageListener { msgList ->
-
+        FileUtil.writeLog("${ctx!!.getExternalFilesDir("log")}/2023-04-06","收到消息--${(msgList[0].body as EMCustomMessageBody).params}")
         Log.d(TAG, "receiverCount: 收到消息 ${msgList.size}")
         Log.d(TAG, "msgId: 收到消息 ${msgList[0].msgId}")
         try {
@@ -399,6 +412,7 @@ class ChatCommonViewModel : ViewModel() {
                 dataClassReceiver = gson.fromJson(res, DataClassReceiver::class.java)
                 dataClassReceiver?.conversationId  =msgList[i].conversationId()
                 Log.d(TAG, "receiverCount uid:${shp!!.getUid()} ")
+                //判断是不是在当前打开页面的群发来的消息
                 if (groupThirdPartyId.value.equals(dataClassReceiver?.conversationId)){
                     if (shp!!.getUid() != dataClassReceiver?.fromUserId){
                         fromUser = FromUser(0, 0, "", "", 0)
@@ -425,27 +439,49 @@ class ChatCommonViewModel : ViewModel() {
                 if (dataClassReceiverList.value!!.size > 0){
                     Log.d(TAG, "receiverCount:收到消息receiverCount+1 = ${receiverCount.value!! + 1} ")
                     Log.d(TAG, "receiverCount:getAppStatus ${getAppStatus()} ")
-                    if (getAppStatus() ){
-                        if (!shp?.getToken().equals("")){
-                            if (ToolUtils.isSilentMode(ctx!!).equals("normal")){
-                                ToolUtils.defaultMediaPlayer(ctx!!)
-                                ToolUtils.playVibrate(ctx!!,false)
-                            }else if (ToolUtils.isSilentMode(ctx!!).equals("vibrate")){
-                                ToolUtils.playVibrate(ctx!!,false)
-                            }
-                        }
+                    if (shp!!.getUid() != dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserId){
+                        if (getAppStatus() == true ){
+                            if (!shp?.getToken().equals("")){
+                                if (ToolUtils.isSilentMode(ctx!!).equals("normal")){
 
-                    }else {
-                        if (!shp?.getToken().equals("")){
-                            val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
-                            val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
-                            val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
-                            Log.d(TAG, "type:$type ")
-                            NotificationUtil.notification("NPPV医生端",name!!,type!!,content!!,ctx!!)
+                                    ToolUtils.defaultMediaPlayer(ctx!!)
+                                    ToolUtils.playVibrate(ctx!!,false)
+                                }else if (ToolUtils.isSilentMode(ctx!!).equals("vibrate")){
+                                    Log.d("TAG", "appstatus vibrate: ")
+                                    ToolUtils.playVibrate(ctx!!,false)
+                                }
+                            }
+
+                        }else {
+                            if (!shp?.getToken().equals("")){
+
+                                val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
+                                val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
+                                val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
+                                Log.d(TAG, "type:$type ")
+                                ToastUtil.showToast(ctx!!,content!!)
+                                NotificationUtil.notification("八戒睡眠管理端",name!!,type!!,content!!,ctx!!)
+                            }
+
+
                         }
+//                        val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
+//                        val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
+//                        val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
+//
+//                        if (!shp?.getToken().equals("")){
+//
+//
+//                            Log.d(TAG, "type:$type ")
+//                            ToastUtil.showToast(ctx!!,content!!)
+//                            NotificationUtil.notification("八戒睡眠管理端",name!!,type!!,content!!,ctx!!)
+////                            NotificationUtil.notification2(ctx!!,content)
+//
+//                        }
 
 
                     }
+
 
                     receiverCount.value = receiverCount.value!! + 1
                 }
@@ -454,8 +490,6 @@ class ChatCommonViewModel : ViewModel() {
         }catch (e:Exception){
             Log.d(TAG, "receiverCount 没走下去$e ")
         }
-
-
 
 
 
@@ -587,6 +621,24 @@ class ChatCommonViewModel : ViewModel() {
         }
     }
 
+
+    val connectionListener = object : EMConnectionListener {
+        override fun onConnected() {
+
+        }
+
+        override fun onDisconnected(errorCode: Int) {
+
+        }
+
+        override fun onTokenWillExpire() {
+
+            getImToken()
+
+
+        }
+
+    }
 
 
 

@@ -129,6 +129,7 @@ class ChatActivity : AppCompatActivity() {
         initView()
 
 
+        //发送文本消息
         binding.sendMsg.setOnClickListener {
             vm.receiverList.value!!.clear()
             vm.receiverCount.value = 0
@@ -199,9 +200,11 @@ class ChatActivity : AppCompatActivity() {
 
                     binding.recyclerView.setItemAnimator(DefaultItemAnimator())
                     Log.d(TAG, "insert:这里添加3")
-                    Log.d(TAG, "insert:这里添加3 ${chatViewModel.messageList.value!![0]}")
 
                     messageListAdapter2!!.notifyItemInserted(0)
+                    if (chatViewModel.messageList.value!!.size>1){
+                        messageListAdapter2!!.notifyItemChanged(1)
+                    }
                     linearLayoutManager?.scrollToPositionWithOffset(0,0)
 
                     binding.edit.setText("")
@@ -215,7 +218,10 @@ class ChatActivity : AppCompatActivity() {
                     binding.recyclerView.setItemAnimator(DefaultItemAnimator())
                     Log.d(TAG, "insert:这里添加2 ")
                     messageListAdapter2!!.notifyItemInserted(0)
-                    messageListAdapter2!!.notifyItemChanged(0)
+                    if (chatViewModel.messageList.value!!.size>1){
+                        messageListAdapter2!!.notifyItemChanged(1)
+                    }
+
                     linearLayoutManager?.scrollToPositionWithOffset(0,0)
 
                     fromUser = null
@@ -309,11 +315,16 @@ class ChatActivity : AppCompatActivity() {
                 binding.recyclerView.setItemAnimator(DefaultItemAnimator())
                 Log.d(TAG, "insert:这里添加1 ")
                 messageListAdapter2!!.notifyItemRangeInserted(0,vm.receiverList.value!!.size)
+                if (chatViewModel.messageList.value!!.size>1){
+                    messageListAdapter2!!.notifyItemChanged(vm.receiverList.value!!.size)
+                }
+
 //                messageListAdapter2!!.notifyItemRangeChanged(0,vm.receiverList.value!!.size)
                 linearLayoutManager?.scrollToPositionWithOffset(0,0)
                 vm.receiverList.value!!.clear()
                 vm.imageList.value!!.clear()
-
+                bodyReadAllMsg = BodyReadAllMsg(chatViewModel.groupId.value)
+                chatViewModel.readAllMsg(bodyReadAllMsg!!)
 
                 vm.receiverCount.value = 0
             }
@@ -497,15 +508,17 @@ class ChatActivity : AppCompatActivity() {
         messageListAdapter2?.setOnItemClickListener(object :MessageListAdapter2.OnItemClickListener{
             override fun onItemClick(messageType:Int,imageUrl: String,view: View,position:Int) {
                 var currentPage = 0
-                for (i in 0 until chatViewModel.imageList.value!!.size){
+                for (i in 0 until chatViewModel.imageList.value!!.size-1){
                     if (imageUrl.equals(chatViewModel.imageList.value!![i])){
                         currentPage = i
                         break
                     }
                 }
+                Log.d(TAG, "imageList: ${chatViewModel.imageList.value!!.size}")
+                Log.d(TAG, "currentPage: ${currentPage}")
                 if (messageType == 2){
                     try {
-                        var bitmap : Bitmap? = null
+
                         PhotoViewer
                             .setClickSingleImg(imageUrl,view)
                             .setCurrentPage(currentPage)
@@ -513,9 +526,8 @@ class ChatActivity : AppCompatActivity() {
                             .setImgContainer(binding.recyclerView)
                             .setShowImageViewInterface(object :PhotoViewer.ShowImageViewInterface{
                                 override fun show(iv: ImageView, url: String) {
-                                    if (iv != null){
-                                        Glide.with(this@ChatActivity).load(url).into(iv)
-                                        iv.drawable
+                                    if (null != iv){
+                                        Glide.with(applicationContext).load(url).skipMemoryCache(true).into(iv)
                                     }
 
                                 }
@@ -654,14 +666,7 @@ class ChatActivity : AppCompatActivity() {
      * 先找到viewholder再找到图
      */
     private fun  savePhoto(bitmap: Bitmap){
-//        withContext(Dispatchers.IO) {
-//            //从viewgroup的0号位置找到recyclerview 再找到viewholder
-////            val holder = (binding.viewPager2[0] as RecyclerView).findViewHolderForAdapterPosition(binding.viewPager2.currentItem) as PagerPhotoViewHolder
-//            //toBitmap里面传递的两个参数是宽和高
-////            val bitmap = imageWidth?.let { imageHeight?.let { it1 ->
-////                    photoView.drawable.toBitmap(it, it1)
-////                }
-//        }
+
         if (Build.VERSION.SDK_INT < 29){
             if (MediaStore.Images.Media.insertImage(this.contentResolver,bitmap,"","") == null){
                 //吐司如果不放在主线程里面就会报错
@@ -702,32 +707,6 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-//        //保存图片用的uri
-//        val saveUri = this.contentResolver.insert(
-//            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//            ContentValues()
-//        )?: kotlin.run {
-//            MainScope().launch {
-//                ToastUtils.showToast(this@ChatActivity,"图片保存失败")
-//            }
-//            return
-//        }
-//
-//        //use在用完之后可以将流自动关闭 用OutputStream写入流
-//        this.contentResolver.openOutputStream(saveUri).use {
-//            //bitmap写入流都用compress
-//            //使用jpg格式压缩率为90
-//            if(bitmap?.compress(Bitmap.CompressFormat.JPEG,100,it) == true){
-//                MainScope().launch {
-//                    ToastUtils.showToast(this@ChatActivity,"图片已保存至相册")
-//                }
-//            }else{
-//                MainScope().launch {
-//                    ToastUtils.showToast(this@ChatActivity,"图片保存失败")
-//
-//                }
-//            }
-//        }
     }
 
     /**
