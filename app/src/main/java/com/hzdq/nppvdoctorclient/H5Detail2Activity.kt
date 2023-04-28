@@ -12,22 +12,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
-import com.hzdq.nppvdoctorclient.databinding.ActivityH5DetailBinding
+import com.hzdq.nppvdoctorclient.databinding.ActivityH5detail2Binding
 import com.hzdq.nppvdoctorclient.dataclass.DataClassBack
 import com.hzdq.nppvdoctorclient.dataclass.DataClassJump
 import com.hzdq.nppvdoctorclient.retrofit.URLCollection
 import com.hzdq.nppvdoctorclient.util.ActivityCollector
-import com.hzdq.nppvdoctorclient.util.Shp
 import com.hzdq.nppvdoctorclient.util.SizeUtil
 import com.hzdq.nppvdoctorclient.util.TokenDialogUtil
 
-class H5DetailActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityH5DetailBinding
-    private lateinit var shp: Shp
+class H5Detail2Activity : AppCompatActivity() {
+    private lateinit var binding: ActivityH5detail2Binding
+    private var tokenDialogUtil: TokenDialogUtil? = null
     private var customView: View? = null
     private var popupwindow: PopupWindow? = null
     private var list:List<String>? = null
-    private var tokenDialogUtil:TokenDialogUtil? = null
     private val launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val code = it.resultCode
         if (code == RESULT_OK){
@@ -36,7 +34,6 @@ class H5DetailActivity : AppCompatActivity() {
         }
 
     }
-
     override fun onDestroy() {
         tokenDialogUtil?.disMissTokenDialog()
         ActivityCollector.removeActivity(this)
@@ -46,10 +43,8 @@ class H5DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityCollector.addActivity(this)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_h5_detail)
         tokenDialogUtil = TokenDialogUtil(this)
-        shp = Shp(this)
-
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_h5detail2)
         binding.head.content.text = intent.getStringExtra("title")
 
         binding.head.back.setOnClickListener {
@@ -69,7 +64,10 @@ class H5DetailActivity : AppCompatActivity() {
 
         binding.webView.isVerticalScrollBarEnabled = false
 
+
         binding.webView.loadUrl(URLCollection.H5_BASE_URL+path)
+        //添加JavascriptInterface后JS可通过Android字段调用JavaAndJsCallInterface类中的任何方法
+        binding.webView.addJavascriptInterface(JavaAndJsCallInterface(),"Android")
 
         binding.head.more.setOnClickListener {
             if (popupwindow == null){
@@ -79,12 +77,7 @@ class H5DetailActivity : AppCompatActivity() {
             }
         }
 
-        //添加JavascriptInterface后JS可通过Android字段调用JavaAndJsCallInterface类中的任何方法
-        binding.webView.addJavascriptInterface(JavaAndJsCallInterface(),"Android")
-
-
     }
-
 
     /**
      * JS要调用的Java中的类.
@@ -94,7 +87,6 @@ class H5DetailActivity : AppCompatActivity() {
         fun showMenu(data:String){
             val content  = data.replace("\"", "").replace("[","").replace("]","")
             list = content.split(",")
-
             if (content.equals("") || content == null){
                 runOnUiThread {
                     binding.head.more.visibility = View.GONE
@@ -130,7 +122,7 @@ class H5DetailActivity : AppCompatActivity() {
         @JavascriptInterface
         fun jump(data: String){
             val dataClassJump = Gson().fromJson(data, DataClassJump::class.java)
-            val intent1 = Intent(this@H5DetailActivity, H5Detail2Activity::class.java)
+            val intent1 = Intent(this@H5Detail2Activity, H5DetailActivity::class.java)
             if (intent.getStringExtra("title").equals("医生详情") || intent.getStringExtra("title").equals("患者详情")){
                 intent1.putExtra("title","服务详情")
             }else {
@@ -139,12 +131,6 @@ class H5DetailActivity : AppCompatActivity() {
             intent1.putExtra("path",dataClassJump.path)
             launcherActivity.launch(intent1)
         }
-
-        @JavascriptInterface
-        fun tokenInvalidation(data: String){
-            tokenDialogUtil?.showTokenDialog()
-        }
-
     }
 
 
@@ -204,3 +190,5 @@ class H5DetailActivity : AppCompatActivity() {
         })
     }
 }
+
+

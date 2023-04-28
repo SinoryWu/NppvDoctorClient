@@ -7,15 +7,15 @@ class URLCollection {
 
 
     companion object{
-        val H5_BASE_URL = "http://test-nppv-assistant-h5.bajiesleep.cn"
 //        val H5_BASE_URL = "http://192.168.0.154:5174"
 
-        val HYBRID_URL  = "http://test-pap-patient-h5.bajiesleep.com?token="
-//        val HYBRID_URL  = "https://pap-patient-h5.bajiesleep.com?token="
-        val BASE_URL = "http://test-hx.bajiesleep.com"
-//        val BASE_URL = "https://pap-hx.bajiesleep.com"
+//        val H5_BASE_URL = "http://test-nppv-assistant-h5.bajiesleep.cn"
+        val H5_BASE_URL = "https://nppv-assistant-h5.bajiesleep.cn"
+//        val HYBRID_URL  = "http://test-pap-patient-h5.bajiesleep.com?token="
+        val HYBRID_URL  = "https://pap-patient-h5.bajiesleep.com?token="
+//        val BASE_URL = "http://test-hx.bajiesleep.com"
+        val BASE_URL = "https://pap.bajiesleep.com"
 
-        val NPPV_BASE_URL = "https://pap.bajiesleep.com"
 
         val HELP_URL = "https://bajiesleep.com/help/nppv_app_list.html"
         val USER_AGREEMENT = "https://www.bajiesleep.com/yonghuxieyi.html"

@@ -8,11 +8,11 @@ import android.webkit.WebSettings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
+import com.hzdq.nppvdoctorclient.H5Detail2Activity
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.databinding.ActivityAddServiceBinding
 import com.hzdq.nppvdoctorclient.dataclass.DataClassBack
 import com.hzdq.nppvdoctorclient.dataclass.DataClassJump
-import com.hzdq.nppvdoctorclient.retrofit.URLCollection
 import com.hzdq.nppvdoctorclient.util.ActivityCollector
 import com.hzdq.nppvdoctorclient.util.TokenDialogUtil
 
