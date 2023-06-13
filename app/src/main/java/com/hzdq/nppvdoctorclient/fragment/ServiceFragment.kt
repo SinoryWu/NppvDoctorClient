@@ -12,11 +12,14 @@ import android.webkit.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.databinding.FragmentServiceBinding
 import com.hzdq.nppvdoctorclient.dataclass.DataClassJump
 import com.hzdq.nppvdoctorclient.H5DetailActivity
+import com.hzdq.nppvdoctorclient.MainViewModel
 import com.hzdq.nppvdoctorclient.retrofit.URLCollection
 import com.hzdq.nppvdoctorclient.services.AddServiceActivity
 import com.hzdq.nppvdoctorclient.util.Shp
@@ -28,10 +31,11 @@ class ServiceFragment : Fragment() {
     private lateinit var binding:FragmentServiceBinding
     private lateinit var shp:Shp
     private var tokenDialogUtil: TokenDialogUtil? = null
+    private lateinit var mainViewModel: MainViewModel
     val launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val code = it.resultCode
         if (code == AppCompatActivity.RESULT_OK){
-            binding.webView.reload()
+            mainViewModel.refreshWebView.value = 1
         }
 
     }
@@ -52,8 +56,14 @@ class ServiceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         tokenDialogUtil = TokenDialogUtil(requireContext())
         shp = Shp(requireContext())
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         initView()
 
+        mainViewModel.refreshWebView.observe(requireActivity(), Observer {
+            if (it == 1){
+                binding.webView.reload()
+            }
+        })
     }
 
     private fun initView(){

@@ -21,7 +21,7 @@ import java.lang.Exception
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val retrofitSingleton = RetrofitSingleton.getInstance(application.applicationContext)
-
+    val refreshWebView = MutableLiveData(0)
     val netWorkTimeOut = MutableLiveData(0)
     val shp = Shp(application.applicationContext)
     /**

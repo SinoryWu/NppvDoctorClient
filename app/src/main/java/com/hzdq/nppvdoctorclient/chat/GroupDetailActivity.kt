@@ -41,6 +41,13 @@ class GroupDetailActivity : AppCompatActivity() {
     private var groupMemberAdapter: GroupMemberAdapter? = null
     private lateinit var shp: Shp
     private var exitGroupDialog: ExitGroupDialog? = null
+    val launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val code = it.resultCode
+        if (code == AppCompatActivity.RESULT_OK){
+            setResult(30)
+        }
+
+    }
     override fun onDestroy() {
         exitGroupDialog?.dismiss()
         tokenDialogUtil?.disMissTokenDialog()
@@ -148,7 +155,7 @@ class GroupDetailActivity : AppCompatActivity() {
                     intent.putExtra("title","患者详情")
                     intent.putExtra("path",URLCollection.getPatientDetail(shp,id))
                 }
-                startActivity(intent)
+                launcherActivity.launch(intent)
             }
 
         })

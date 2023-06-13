@@ -9,12 +9,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.databinding.FragmentDoctorBinding
 import com.hzdq.nppvdoctorclient.dataclass.DataClassJump
 import com.hzdq.nppvdoctorclient.H5DetailActivity
+import com.hzdq.nppvdoctorclient.MainViewModel
 import com.hzdq.nppvdoctorclient.retrofit.URLCollection
 import com.hzdq.nppvdoctorclient.util.Shp
 import com.hzdq.nppvdoctorclient.util.TokenDialogUtil
@@ -35,6 +39,14 @@ class DoctorFragment : Fragment() {
     private lateinit var binding:FragmentDoctorBinding
     private lateinit var shp:Shp
     private var tokenDialogUtil: TokenDialogUtil? = null
+    private lateinit var mainViewModel:MainViewModel
+    val launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val code = it.resultCode
+        if (code == AppCompatActivity.RESULT_OK){
+            mainViewModel.refreshWebView.value = 1
+        }
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,6 +65,7 @@ class DoctorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         tokenDialogUtil = TokenDialogUtil(requireContext())
         shp = Shp(requireContext())
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         initView()
     }
 
@@ -122,7 +135,7 @@ class DoctorFragment : Fragment() {
             val intent = Intent(requireActivity(), H5DetailActivity::class.java)
             intent.putExtra("title","医生详情")
             intent.putExtra("path",dataClassJump.path)
-            startActivity(intent)
+            launcherActivity.launch(intent)
 
         }
 

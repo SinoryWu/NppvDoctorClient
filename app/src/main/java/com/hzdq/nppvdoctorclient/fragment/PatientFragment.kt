@@ -6,12 +6,16 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.webkit.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.databinding.FragmentPatientBinding
 import com.hzdq.nppvdoctorclient.dataclass.DataClassJump
 import com.hzdq.nppvdoctorclient.H5DetailActivity
+import com.hzdq.nppvdoctorclient.MainViewModel
 import com.hzdq.nppvdoctorclient.retrofit.URLCollection
 import com.hzdq.nppvdoctorclient.util.Shp
 import com.hzdq.nppvdoctorclient.util.TokenDialogUtil
@@ -22,6 +26,15 @@ class PatientFragment : Fragment() {
     private lateinit var binding :FragmentPatientBinding
     private lateinit var shp :Shp
     private var tokenDialogUtil: TokenDialogUtil? = null
+    private lateinit var mainViewModel: MainViewModel
+
+    val launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val code = it.resultCode
+        if (code == AppCompatActivity.RESULT_OK){
+            mainViewModel.refreshWebView.value = 1
+        }
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +52,7 @@ class PatientFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         tokenDialogUtil = TokenDialogUtil(requireContext())
         shp = Shp(requireContext())
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         initView()
     }
 
@@ -88,7 +102,7 @@ class PatientFragment : Fragment() {
             val intent = Intent(requireActivity(), H5DetailActivity::class.java)
             intent.putExtra("path",dataClassJump.path)
             intent.putExtra("title","患者详情")
-            startActivity(intent)
+            launcherActivity.launch(intent)
             Log.d(TAG, "jump: ${dataClassJump.path}")
         }
 

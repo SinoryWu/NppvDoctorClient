@@ -74,11 +74,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
     }
 
-    var msgListener = EMMessageListener { msgList ->
-        FileUtil.writeLog("${getExternalFilesDir("log")}/2023-04-06","收到消息--${(msgList[msgList.size-1].body as EMCustomMessageBody).params}")
 
-
-    }// 收到消息，遍历消息队列，解析和显示。
     override fun onDestroy() {
         if (!shp.getToken().equals("")){
             vm.unregisterTimeChange()

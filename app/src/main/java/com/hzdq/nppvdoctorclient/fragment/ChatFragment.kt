@@ -11,7 +11,9 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -20,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hzdq.nppvdoctorclient.ChatCommonViewModel
+import com.hzdq.nppvdoctorclient.MainViewModel
 import com.hzdq.nppvdoctorclient.R
 import com.hzdq.nppvdoctorclient.body.BodyReadAllMsg
 import com.hzdq.nppvdoctorclient.chat.ChatActivity
@@ -44,6 +47,8 @@ class ChatFragment : Fragment() {
     private val vm: ChatCommonViewModel by shareViewModels("sinory")
     private var tokenDialogUtil :TokenDialogUtil? = null
     private var bodyReadAllMsg:BodyReadAllMsg? = null
+    private lateinit var mainViewModel: MainViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,6 +70,7 @@ class ChatFragment : Fragment() {
         shp = Shp(requireContext())
         shp?.saveToSp("ConversationSearchName","")
         tokenDialogUtil = TokenDialogUtil(requireContext())
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         initView()
         conversationListAdapter = ConversationListAdapter(chatViewModel)
         val linearLayoutManager = LinearLayoutManager(requireContext())
@@ -257,6 +263,8 @@ class ChatFragment : Fragment() {
             chatViewModel.resetConversationListQuery()
             if (resultCode == 20){
                 ToastUtil.showToast(requireContext(),"已退出群聊")
+            }else if (resultCode == 30){
+                mainViewModel.refreshWebView.value = 1
             }
 //            if (resultCode == RESULT_OK){
 ////                bodyReadAllMsg = BodyReadAllMsg(data?.getIntExtra("groupId",0))

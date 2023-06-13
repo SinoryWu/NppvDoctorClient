@@ -377,6 +377,8 @@ class ChatActivity : AppCompatActivity() {
 //                intent.putExtra("groupId",chatViewModel.groupId.value)
                 setResult(20)
                 finish()
+            }else if (it.resultCode == 30){
+                setResult(30)
             }
         }
 
