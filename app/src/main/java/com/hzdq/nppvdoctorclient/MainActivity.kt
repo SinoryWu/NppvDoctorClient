@@ -27,6 +27,8 @@ import com.hzdq.nppvdoctorclient.dataclass.ImMessageList
 import com.hzdq.nppvdoctorclient.fragment.*
 import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.mine.MineViewModel
+import com.hzdq.nppvdoctorclient.mine.ModifyPasswordActivity
+import com.hzdq.nppvdoctorclient.mine.dialog.SafeDialog
 import com.hzdq.nppvdoctorclient.mine.dialog.UpdateDialog
 import com.hzdq.nppvdoctorclient.mine.dialog.VersionUpdateDialog
 import com.hzdq.nppvdoctorclient.util.*
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private var updateDialog: UpdateDialog? = null
     private var versionUpdateDialog: VersionUpdateDialog? = null
-
+    private var safeDialog:SafeDialog? = null
     override fun onStart() {
 
         Log.d(TAG, "onStart: ")
@@ -76,13 +78,14 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onDestroy() {
-        if (!shp.getToken().equals("")){
+        if (!shp.getToken().equals("") ){
             vm.unregisterTimeChange()
         }
         if (shp.getFirstLoginIm()==false){
             vm.unregisterListener()
 //            EMClient.getInstance().chatManager().removeMessageListener(msgListener);
         }
+        safeDialog?.dismiss()
         tokenDialogUtil?.disMissTokenDialog()
         updateDialog?.dismiss()
         versionUpdateDialog?.dismiss()
@@ -114,6 +117,24 @@ class MainActivity : AppCompatActivity() {
             .build();
         WorkManager.getInstance().enqueue(workRequest);//这串代码是加入任务队列的意思
 
+        if (shp.getWeakPassword()){
+            if (safeDialog == null){
+                safeDialog = SafeDialog(this,R.style.CustomDialog)
+            }
+            safeDialog?.setConfirm(object :SafeDialog.ConfirmAction{
+                override fun onRightClick() {
+                    startActivity(Intent(this@MainActivity,ModifyPasswordActivity::class.java))
+                    finish()
+                }
+
+            })
+            safeDialog?.show()
+            safeDialog?.setCanceledOnTouchOutside(false)
+        }
+        safeDialog?.setOnDismissListener {
+            safeDialog = null
+        }
+
         if (shp.getFirstLoginIm() == false){
             vm.initIm()
             vm.loginIm()
@@ -121,6 +142,8 @@ class MainActivity : AppCompatActivity() {
 
 
         }
+
+
 
 
         vm.registerActivityLifecycleCallbacks(application)

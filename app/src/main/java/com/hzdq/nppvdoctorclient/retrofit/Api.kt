@@ -11,7 +11,7 @@ import java.io.File
 
 interface Api {
     //用户密码登录
-    @POST("/hx_app/doctor/app/user/auth/login")
+    @POST("/hx_app/doctor/app/user/auth/v2/login")
     fun loginPassword(@Body bodyLoginPassword: BodyLoginPassword):Call<DataClassLogin>
     //手机号验证码登录
     @POST("/hx_app/doctor/app/user/auth/loginPhone")
@@ -63,7 +63,7 @@ interface Api {
     @GET("/hx_app/doctor/app/doctor/user/load")
     fun getDoctorLoad(@Query("uid") uid:Int):Call<DataClassDoctorLoad>
     //修改密码
-    @POST("/hx_app/doctor/app/user/changePassword")
+    @POST("/hx_app/doctor/app/user/v2/changePassword")
     fun changePassword(@Body bodyModifyPassword: BodyModifyPassword):Call<DataClassGeneralBoolean>
     //获取最新版本
     @POST("/hx_app/app/version/getTheLatestVersion")

@@ -5,7 +5,7 @@ package com.hzdq.nppvdoctorclient.dataclass
  *Author:Sinory
  *Description:
  */
-data class DataClassLogin(
+ data class DataClassLogin(
     var code: String?,
     var `data`: DataLogin?,
     var errorDetail: String?,
@@ -14,7 +14,15 @@ data class DataClassLogin(
 )
 
 data class DataLogin(
+    var doctorDepartment: String?,
+    var doctorPosition: String?,
+    var hospitalId: Int?,
+    var hospitalName: String?,
+    var mobile: String?,
+    var name: String?,
     var roleType: Int?,
     var token: String?,
-    var uid: Int?
+    var uid: Int?,
+    var userType: Int?,
+    var weakPassword: Boolean?
 )

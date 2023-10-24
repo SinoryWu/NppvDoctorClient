@@ -24,6 +24,8 @@ class ModifyPasswordActivity : AppCompatActivity() {
     private lateinit var binding:ActivityModifyPasswordBinding
     private var tokenDialogUtil:TokenDialogUtil? = null
     private lateinit var shp: Shp
+    private var password = ""
+    private var confirmPassword = ""
     override fun onDestroy() {
         tokenDialogUtil?.disMissTokenDialog()
         ActivityCollector.removeActivity(this)
@@ -40,97 +42,77 @@ class ModifyPasswordActivity : AppCompatActivity() {
         getCode()
     }
 
+    override fun onBackPressed() {
+        if (shp.getWeakPassword()){
+
+            startActivity(Intent(this,LoginActivity::class.java))
+            finish()
+        }else {
+            finish()
+        }
+    }
+
     private fun initView(){
         binding.head.content.text = "修改密码"
         binding.head.back.setOnClickListener {
-            finish()
+           onBackPressed()
         }
         binding.phone.text = shp.getPhone()
 
 
         binding.newPassword.content.text = "新密码"
         binding.repeatPassword.content.text = "重复密码"
-        val dataID = "qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM1234567890";
-        binding.newPassword.edit.setKeyListener(object : DigitsKeyListener(){
-            override fun getInputType(): Int {
-                return EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
-            }
 
-            override fun getAcceptedChars(): CharArray {
-                val  data =dataID.toCharArray();
-                return data
-            }
-        })
-
-        binding.repeatPassword.edit.setKeyListener(object : DigitsKeyListener(){
-            override fun getInputType(): Int {
-                return EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
-            }
-
-            override fun getAcceptedChars(): CharArray {
-                val  data =dataID.toCharArray();
-                return data
-            }
-        })
-        binding.newPassword.edit.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        binding.newPassword.edit.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus){
+                password = binding.newPassword.edit.text.toString()
+                if (PasswordRegularUtil.getResult(password)){
+                    binding.newPassword.layout.background = getDrawable(R.drawable.modify_password_edit_bg_true)
+                }else {
+                    binding.newPassword.layout.background = getDrawable(R.drawable.modify_password_edit_bg_false)
+                    ToastUtil.showToast(this,"请输入8位以上含3种字符的密码")
+                }
 
             }
+        }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-               mineViewModel.newPassword.value = s.toString()
-            }
+        binding.repeatPassword.edit.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus){
+                confirmPassword = binding.repeatPassword.edit.text.toString()
+                if (PasswordRegularUtil.getResult(confirmPassword)){
+                    binding.repeatPassword.layout.background = getDrawable(R.drawable.modify_password_edit_bg_true)
 
-            override fun afterTextChanged(s: Editable?) {
 
-            }
+                }else {
+                    binding.repeatPassword.layout.background = getDrawable(R.drawable.modify_password_edit_bg_false)
+                    ToastUtil.showToast(this,"请输入8位以上含3种字符的密码")
+                }
 
-        })
 
-        binding.repeatPassword.edit.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                mineViewModel.repeatPassword.value = s.toString()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
 
             }
+        }
 
-        })
+
 
 
 
         binding.confirm.setOnClickListener {
+            binding.newPassword.edit.clearFocus()
+            binding.repeatPassword.edit.clearFocus()
+            mineViewModel.newPassword.value = AESEncrypt.encryptAES(binding.newPassword.edit.text.toString(),"respirator_10131")
+            mineViewModel.repeatPassword.value = AESEncrypt.encryptAES(binding.repeatPassword.edit.text.toString(),"respirator_10131")
+
             if (binding.code.text.toString().equals("")){
                 ToastUtil.showToast(this,"请输入验证码")
                 return@setOnClickListener
             }
-            if (mineViewModel.newPassword.value.equals("")){
-                ToastUtil.showToast(this,"请输入新密码")
-                return@setOnClickListener
-            }
+
             if (!mineViewModel.newPassword.value.equals(mineViewModel.repeatPassword.value)){
                 ToastUtil.showToast(this,"两次密码不一致")
                 return@setOnClickListener
             }
 
-            if (mineViewModel.newPassword.value!!.length < 6 || mineViewModel.newPassword.value!!.length > 20){
-                ToastUtil.showToast(this,"密码长度6～20个字符，不能为纯数字或纯字母")
-                return@setOnClickListener
-            }
-
-            if (PasswordUtil.isAllLetters(mineViewModel.newPassword.value!!)){
-                ToastUtil.showToast(this,"密码不能为纯字母")
-                return@setOnClickListener
-            }
-            if (PasswordUtil.isNumeric(mineViewModel.newPassword.value!!)){
-                ToastUtil.showToast(this,"密码不能为纯数字")
-                return@setOnClickListener
-            }
             val bodyModifyPassword = BodyModifyPassword(mineViewModel.repeatPassword.value,mineViewModel.newPassword.value,shp.getPhone(),binding.code.text.toString())
 //            val bodyModifyPassword = BodyModifyPassword(mineViewModel.repeatPassword.value,mineViewModel.newPassword.value,"15355090637",binding.code.text.toString())
             mineViewModel.changePassword(bodyModifyPassword)

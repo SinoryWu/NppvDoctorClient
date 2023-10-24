@@ -18,10 +18,7 @@ import com.hzdq.nppvdoctorclient.body.BodyLoginVerificationCode
 import com.hzdq.nppvdoctorclient.databinding.ActivityLoginBinding
 import com.hzdq.nppvdoctorclient.login.dialog.PrivateDialog
 import com.hzdq.nppvdoctorclient.mine.PrivacyAgreementActivity
-import com.hzdq.nppvdoctorclient.util.BarColor
-import com.hzdq.nppvdoctorclient.util.PhoneFormatCheckUtils
-import com.hzdq.nppvdoctorclient.util.Shp
-import com.hzdq.nppvdoctorclient.util.ToastUtil
+import com.hzdq.nppvdoctorclient.util.*
 import com.hzdq.nppvdoctorclient.util.ViewClickDelay.clickDelay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -145,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
             //当前处于密码登录
 
             bodyLoginPassword?.mobile  = loginViewModel.user.value
-            bodyLoginPassword?.passWord  = loginViewModel.password.value
+            bodyLoginPassword?.passWord  = AESEncrypt.encryptAES(loginViewModel.password.value,"respirator_10131")
             loginViewModel.loginPassword(bodyLoginPassword!!)
         }else {
             //当前处于验证码登录

@@ -49,7 +49,7 @@ class ChatCommonViewModel : ViewModel() {
     private var shp: Shp? = null
     private var retrofitSingleton: RetrofitSingleton? = null
 
-    private val timeChangeReceiver: TimeChangeReceiver? = null
+    private var timeChangeReceiver: TimeChangeReceiver? = null
     private var emClient: EMClient? = null
     val intentFilter = IntentFilter()
 
@@ -223,7 +223,7 @@ class ChatCommonViewModel : ViewModel() {
         intentFilter.addAction(Intent.ACTION_TIME_CHANGED) //设置了系统时间
 
 
-        val timeChangeReceiver = TimeChangeReceiver(shp!!, this)
+        timeChangeReceiver = TimeChangeReceiver(shp!!, this)
         ctx?.registerReceiver(timeChangeReceiver, intentFilter)
     }
 

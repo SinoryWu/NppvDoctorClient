@@ -81,7 +81,11 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     loginMsg.value = "${response.body()?.msg}"
                     if (response.body()?.code.equals("1")){
-
+                        response.body()?.data?.weakPassword?.let {
+                            shp.saveToSpBoolean("weakPassword",
+                                it
+                            )
+                        }
                         shp.saveToSpBoolean("firstLogin",false)
                         response.body()?.data?.token?.let { shp.saveToSp("token", it) }
                         response.body()?.data?.uid?.let { shp.saveToSpInt("uid", it) }
@@ -124,7 +128,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     loginMsg.value = "${response.body()?.msg}"
                     if (response.body()?.code.equals("1")){
-
+                        shp.saveToSpBoolean("weakPassword", false)
                         shp.saveToSpBoolean("firstLogin",false)
                         response.body()?.data?.token?.let { shp.saveToSp("token", it) }
                         response.body()?.data?.uid?.let { shp.saveToSpInt("uid", it) }

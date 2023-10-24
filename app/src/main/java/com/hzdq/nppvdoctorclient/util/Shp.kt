@@ -28,6 +28,11 @@ class Shp(val context: Context) {
         }
     }
 
+    fun getWeakPassword():Boolean{
+        val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
+        return sp.getBoolean("weakPassword",false)
+    }
+
     fun getToken():String?{
         val sp = context.getSharedPreferences("sp",Context.MODE_PRIVATE)
         return sp.getString("token","")

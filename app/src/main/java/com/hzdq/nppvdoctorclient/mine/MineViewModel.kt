@@ -134,7 +134,7 @@ class MineViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onFailure(call: Call<DataClassGeneralBoolean>, t: Throwable) {
-                changeMsg.value = "发送短信网络请求失败"
+                changeMsg.value = "修改密码网络请求失败"
                 changeCode.value = 404
             }
 
