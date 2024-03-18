@@ -27,6 +27,7 @@ import java.io.IOException
  *Author:Sinory
  *Description:
  */
+
 class MyPrintAdapter(val context: Context,val  filePath: String,val fileName:String) :
     PrintDocumentAdapter() {
 
