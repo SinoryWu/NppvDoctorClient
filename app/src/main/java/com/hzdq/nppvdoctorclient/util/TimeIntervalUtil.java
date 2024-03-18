@@ -21,7 +21,7 @@ public class TimeIntervalUtil {
             long diff = Math.abs(date2.getTime() - date1.getTime());
 //            long diffSeconds = diff / 1000;
             long diffMinutes = diff / 60000;
-//            Log.d("asdsadsad", "diffSeconds: "+diffSeconds);
+
             return diffMinutes > minutes;
         } catch (Exception e) {
             e.printStackTrace();

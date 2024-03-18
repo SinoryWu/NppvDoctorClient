@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+
+    <com.journeyapps.barcodescanner.BarcodeView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/zxing_barcode_surface"
+        app:zxing_framing_rect_width="375dp"
+        app:zxing_framing_rect_height="800dp"/>
+
+    <com.hzdq.nppvdoctorclient.view.CustomViewFinderView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:id="@+id/zxing_viewfinder_view"
+        android:visibility="visible"
+        app:zxing_possible_result_points="@color/zxing_custom_possible_result_points"
+        app:zxing_result_view="@color/colorTransparent"
+        app:zxing_viewfinder_laser="@color/colorTransparent"
+        app:zxing_viewfinder_mask="@color/colorTransparent"/>
+
+
+
+
+
+
+
+</merge >

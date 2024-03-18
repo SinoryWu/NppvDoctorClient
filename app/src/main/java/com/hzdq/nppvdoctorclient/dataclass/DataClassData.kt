@@ -6,5 +6,5 @@ package com.hzdq.nppvdoctorclient.dataclass
  *Description:
  */
 data class DataClassData(
-    var `data`: String?
+    var `data`: String
 )

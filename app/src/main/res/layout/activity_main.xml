@@ -55,13 +55,6 @@
                 android:layout_weight="1" />
 
             <include
-                android:id="@+id/chatIcon"
-                layout="@layout/chat_icon"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1" />
-
-            <include
                 android:id="@+id/mineIcon"
                 layout="@layout/mine_icon"
                 android:layout_width="0dp"

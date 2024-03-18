@@ -5,10 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" /> <!-- IM SDK required start -->
     <!-- 允许程序振动，用于本地通知设置振动 -->
     <uses-permission android:name="android.permission.VIBRATE" /> <!-- 访问网络权限 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 麦克风权限，用于语音消息时录制语音，不使用录制语音可以移除 -->
     <!-- <uses-permission android:name="android.permission.RECORD_AUDIO" /> -->
     <!-- 相机权限，用于图片消息时拍摄图片，不使用拍照可以移除 -->
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- 获取运营商信息，用于获取网络状态 -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 相机权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 获取读存储权限，用于附件等的获取 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 访问 GPS 定位，用于定位消息，如果不用定位相关可以移除 -->
@@ -35,19 +34,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".H5Detail2Activity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing|stateHidden"/>
-        <activity android:name=".services.AddServiceActivity"
+        <activity android:name=".ScanActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing|stateHidden"/>
         <activity
+            android:name=".H5Detail2Activity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing|stateHidden" />
+        <activity
+            android:name=".services.AddServiceActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing|stateHidden" />
+        <activity
             android:name=".H5DetailActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".chat.AddDoctorActivity"
             android:launchMode="singleTop"
@@ -112,23 +117,6 @@
         <meta-data
             android:name="design_height_in_dp"
             android:value="667" /> <!-- 声明 SDK 所需的 service 的核心功能 -->
-        <service
-            android:name="com.hyphenate.chat.EMChatService"
-            android:exported="true" />
-        <service
-            android:name="com.hyphenate.chat.EMJobService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <receiver
-            android:name=".push.EasemobReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.hyphenate.notification.intent.RECEIVE_MESSAGE" />
-
-                <category android:name="${applicationId}" />
-            </intent-filter>
-        </receiver> <!-- 华为 HMS Config -->
         <service
             android:name=".service.HMSPushService"
             android:directBootAware="true"

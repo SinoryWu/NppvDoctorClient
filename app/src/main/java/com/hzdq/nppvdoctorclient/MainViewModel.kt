@@ -24,6 +24,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val refreshWebView = MutableLiveData(0)
     val netWorkTimeOut = MutableLiveData(0)
     val shp = Shp(application.applicationContext)
+    val isScan = MutableLiveData(0)
+    val scanSn = MutableLiveData("")
+    val isScanSn = MutableLiveData(0)
     /**
      * 登出
      */
@@ -79,6 +82,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 call: Call<DataClassUserInfo>,
                 response: Response<DataClassUserInfo>
             ) {
+                Log.d("getUserInfo", "onResponse: ${response.body()}")
                 try {
                     userInfoMsg.value = "${response.body()?.msg}"
                     if (response.body()?.code.equals("1")){

@@ -16,15 +16,6 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.huawei.hms.framework.common.ContextCompat.registerReceiver
 import com.huawei.hms.utils.UIUtil.isBackground
-import com.hyphenate.EMCallBack
-import com.hyphenate.EMConnectionListener
-import com.hyphenate.EMGroupChangeListener
-import com.hyphenate.EMMessageListener
-import com.hyphenate.chat.EMClient
-import com.hyphenate.chat.EMCustomMessageBody
-import com.hyphenate.chat.EMMucSharedFile
-import com.hyphenate.chat.EMOptions
-import com.hyphenate.push.EMPushConfig
 import com.hzdq.nppvdoctorclient.dataclass.*
 import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.retrofit.RetrofitSingleton
@@ -49,8 +40,7 @@ class ChatCommonViewModel : ViewModel() {
     private var shp: Shp? = null
     private var retrofitSingleton: RetrofitSingleton? = null
 
-    private var timeChangeReceiver: TimeChangeReceiver? = null
-    private var emClient: EMClient? = null
+
     val intentFilter = IntentFilter()
 
     fun setContext(ctx: Context) {
@@ -120,187 +110,6 @@ class ChatCommonViewModel : ViewModel() {
         }
     }
 
-    //1.获取app详细信息,2.获取当前用户回话token
-    val networkTimeout = MutableLiveData(0)
-
-    /**
-     * 获取app详细信息
-     */
-    val appInfoCode = MutableLiveData(0)
-    val appInfoMsg = MutableLiveData("")
-    fun getImAppInfo() {
-        retrofitSingleton!!.api().getImAppInfo().enqueue(object : Callback<DataClassImAppInfo> {
-            override fun onResponse(
-                call: Call<DataClassImAppInfo>,
-                response: Response<DataClassImAppInfo>
-            ) {
-                try {
-                    appInfoMsg.value = "${response.body()?.msg}"
-                    if (response.body()?.code.equals("1")) {
-                        Log.d(TAG, "getImAppInfo onResponse:${response.body()} ")
-                        response.body()?.data?.appKey?.let { shp?.saveToSp("appKey", it) }
-                        response.body()?.data?.clientId?.let { shp?.saveToSp("clientId", it) }
-                        response.body()?.data?.clientSecret?.let {
-                            shp?.saveToSp(
-                                "clientSecret",
-                                it
-                            )
-                        }
-                        appInfoCode.value = 1
-
-                    } else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")) {
-                        appInfoCode.value = 11
-                    } else {
-                        appInfoCode.value = response.body()?.code?.toInt()
-                    }
-                } catch (e: Exception) {
-
-                    appInfoMsg.value = "错误！请求响应码：${response.code()}"
-                    appInfoCode.value = 200
-                }
-            }
-
-            override fun onFailure(call: Call<DataClassImAppInfo>, t: Throwable) {
-                appInfoMsg.value = "获取app详细信息网络请求失败"
-                appInfoCode.value = 404
-                networkTimeout.value = 1
-            }
-
-        })
-    }
-
-
-    /**
-     * 获取当前用户回话token
-     */
-    val imTokenCode = MutableLiveData(0)
-    val imTokenMsg = MutableLiveData("")
-    fun getImToken() {
-        retrofitSingleton!!.api().getUserImToken().enqueue(object : Callback<DataClassUserImToken> {
-            override fun onResponse(
-                call: Call<DataClassUserImToken>,
-                response: Response<DataClassUserImToken>
-            ) {
-                try {
-                    imTokenMsg.value = "${response.body()?.msg}"
-                    if (response.body()?.code.equals("1")) {
-                        Log.d(TAG, "getImToken onResponse:${response.body()} ")
-                        response.body()?.data?.imToken?.let { shp?.saveToSp("imToken", it) }
-                        response.body()?.data?.imUserName?.let { shp?.saveToSp("imUserName", it) }
-                        shp?.saveToSpLone("tokenTimeMillis", System.currentTimeMillis())
-                        Log.d(TAG, "getImToken: 请求成功 ")
-                        if (shp?.getFirstLoginIm() == false) {
-                            loginIm()
-                        }
-                        imTokenCode.value = 1
-                    } else if (response.body()?.code.equals("11") || response.body()?.code.equals("8")) {
-                        imTokenCode.value = 11
-                    } else {
-                        imTokenCode.value = response.body()?.code?.toInt()
-                    }
-                } catch (e: Exception) {
-
-                    imTokenMsg.value = "错误！请求响应码：${response.code()}"
-                    imTokenCode.value = 200
-                }
-            }
-
-            override fun onFailure(call: Call<DataClassUserImToken>, t: Throwable) {
-                imTokenMsg.value = "获取app详细信息网络请求失败"
-                imTokenCode.value = 404
-                networkTimeout.value = 2
-            }
-
-        })
-    }
-
-
-    fun registerTimeChange() {
-        intentFilter.addAction(Intent.ACTION_TIME_TICK) //每分钟变化
-
-        intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED) //设置了系统时区
-
-        intentFilter.addAction(Intent.ACTION_TIME_CHANGED) //设置了系统时间
-
-
-        timeChangeReceiver = TimeChangeReceiver(shp!!, this)
-        ctx?.registerReceiver(timeChangeReceiver, intentFilter)
-    }
-
-    fun unregisterTimeChange() {
-        ctx?.unregisterReceiver(timeChangeReceiver)
-    }
-
-
-    internal class TimeChangeReceiver(val shp: Shp, val chatCommonViewModel: ChatCommonViewModel) :
-        BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                Intent.ACTION_TIME_TICK -> {
-                    //每过一分钟 触发
-
-                    if (System.currentTimeMillis() - shp.getTokenTimeMillis()!! > 1739000) {
-                        Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:请求一次")
-                        chatCommonViewModel.getImToken()
-                    }
-                    Log.d("TimeChangeReceiver", "ACTION_TIME_TICK:${System.currentTimeMillis()}")
-                }
-
-                Intent.ACTION_TIME_CHANGED ->                     //设置了系统时间
-                    Log.d("TimeChangeReceiver", "ACTION_TIME_CHANGED: ")
-
-                Intent.ACTION_TIMEZONE_CHANGED ->                     //设置了系统时区的action
-                    Log.d("TimeChangeReceiver", "ACTION_TIMEZONE_CHANGED: ")
-            }
-        }
-    }
-
-
-    fun registerListener() {
-        // 注册消息监听
-        emClient?.chatManager()?.addMessageListener(msgListener);
-        emClient?.groupManager()?.addGroupChangeListener(groupListener);
-        emClient?.addConnectionListener(connectionListener)
-    }
-
-    fun unregisterListener() {
-        // 解注册消息监听
-        emClient?.chatManager()?.removeMessageListener(msgListener);
-        emClient?.groupManager()?.removeGroupChangeListener(groupListener);
-        emClient?.removeConnectionListener(connectionListener)
-    }
-
-    fun initIm() {
-        emClient = EMClient.getInstance()
-        val options = EMOptions()
-        options.setAppKey(shp?.getAppKey());
-        val builder = EMPushConfig.Builder(ctx!!)
-//        builder.enableHWPush()
-        options.setPushConfig(builder.build());
-        emClient?.init(ctx!!, options);
-
-    }
-
-    fun loginIm() {
-        Log.d(TAG, "loginIm: ${shp?.getImUserName()}")
-        emClient?.loginWithToken(shp?.getImUserName(), shp?.getImToken(), object : EMCallBack {
-            // 登录成功回调
-            override fun onSuccess() {
-                Log.d(TAG, "环信账号登录成功 ")
-                CoroutineScope(Dispatchers.Main).launch {
-                    shp?.saveToSpBoolean("firstLoginIm", false)
-                }
-            }
-
-            // 登录失败回调，包含错误信息
-            override fun onError(code: Int, error: String) {
-                Log.d(TAG, "环信账号登录失败：$error ")
-            }
-
-            override fun onProgress(i: Int, s: String) {}
-        })
-    }
 
     private fun notification(name: String,type:Int,content:String){
         /**
@@ -401,245 +210,102 @@ class ChatCommonViewModel : ViewModel() {
     val listId = MutableLiveData(0)
     val imageList = MutableLiveData<MutableList<String>>(ArrayList())
     val groupThirdPartyId = MutableLiveData("")
-    var msgListener = EMMessageListener { msgList ->
-        FileUtil.writeLog("${ctx!!.getExternalFilesDir("log")}/2023-04-06","收到消息--${(msgList[0].body as EMCustomMessageBody).params}")
-        Log.d(TAG, "receiverCount: 收到消息 ${msgList.size}")
-        Log.d(TAG, "msgId: 收到消息 ${msgList[0].msgId}")
-        try {
-            for (i in 0 until msgList.size) {
-                var res = gson.toJson((msgList[i].body as EMCustomMessageBody).params)
-                Log.d(TAG, "receiverCount res:${res} ")
-                dataClassReceiver = gson.fromJson(res, DataClassReceiver::class.java)
-                dataClassReceiver?.conversationId  =msgList[i].conversationId()
-                Log.d(TAG, "receiverCount uid:${shp!!.getUid()} ")
-                //判断是不是在当前打开页面的群发来的消息
-                if (groupThirdPartyId.value.equals(dataClassReceiver?.conversationId)){
-                    if (shp!!.getUid() != dataClassReceiver?.fromUserId){
-                        fromUser = FromUser(0, 0, "", "", 0)
-                        fromUser?.userName = dataClassReceiver?.fromUserName
-                        fromUser?.userType = dataClassReceiver?.fromUserType
-                        imMessageList = ImMessageList(0, 2, fromUser, "", "", 0, "", false)
-                        imMessageList?.fromUser = fromUser
-                        imMessageList?.gmtCreate = DateUtil.stamp2Date(System.currentTimeMillis())
-                        imMessageList?.messageType = dataClassReceiver?.messageType
-                        imMessageList?.message = dataClassReceiver?.messageContent
-                        if (dataClassReceiver?.messageType == 2){
-                            imageList.value?.add(dataClassReceiver?.messageContent!!)
-                        }
-                        receiverList.value?.add(0, imMessageList!!)
-                        fromUser = null
-                        imMessageList = null
-                    }
-                }
-
-                dataClassReceiverList.value?.add(dataClassReceiver!!)
-                Log.d(TAG, "receiverCount:${dataClassReceiverList.value} ")
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                if (dataClassReceiverList.value!!.size > 0){
-                    Log.d(TAG, "receiverCount:收到消息receiverCount+1 = ${receiverCount.value!! + 1} ")
-                    Log.d(TAG, "receiverCount:getAppStatus ${getAppStatus()} ")
-                    if (shp!!.getUid() != dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserId){
-                        if (getAppStatus() == true ){
-                            if (!shp?.getToken().equals("")){
-                                if (ToolUtils.isSilentMode(ctx!!).equals("normal")){
-
-                                    ToolUtils.defaultMediaPlayer(ctx!!)
-                                    ToolUtils.playVibrate(ctx!!,false)
-                                }else if (ToolUtils.isSilentMode(ctx!!).equals("vibrate")){
-                                    Log.d("TAG", "appstatus vibrate: ")
-                                    ToolUtils.playVibrate(ctx!!,false)
-                                }
-                            }
-
-                        }else {
-                            if (!shp?.getToken().equals("")){
-
-                                val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
-                                val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
-                                val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
-                                Log.d(TAG, "type:$type ")
-                                ToastUtil.showToast(ctx!!,content!!)
-                                NotificationUtil.notification("八戒睡眠管理端",name!!,type!!,content!!,ctx!!)
-                            }
-
-
-                        }
-//                        val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
-//                        val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
-//                        val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
+//    var msgListener = EMMessageListener { msgList ->
+//        FileUtil.writeLog("${ctx!!.getExternalFilesDir("log")}/2023-04-06","收到消息--${(msgList[0].body as EMCustomMessageBody).params}")
+//        Log.d(TAG, "receiverCount: 收到消息 ${msgList.size}")
+//        Log.d(TAG, "msgId: 收到消息 ${msgList[0].msgId}")
+//        try {
+//            for (i in 0 until msgList.size) {
+//                var res = gson.toJson((msgList[i].body as EMCustomMessageBody).params)
+//                Log.d(TAG, "receiverCount res:${res} ")
+//                dataClassReceiver = gson.fromJson(res, DataClassReceiver::class.java)
+//                dataClassReceiver?.conversationId  =msgList[i].conversationId()
+//                Log.d(TAG, "receiverCount uid:${shp!!.getUid()} ")
+//                //判断是不是在当前打开页面的群发来的消息
+//                if (groupThirdPartyId.value.equals(dataClassReceiver?.conversationId)){
+//                    if (shp!!.getUid() != dataClassReceiver?.fromUserId){
+//                        fromUser = FromUser(0, 0, "", "", 0)
+//                        fromUser?.userName = dataClassReceiver?.fromUserName
+//                        fromUser?.userType = dataClassReceiver?.fromUserType
+//                        imMessageList = ImMessageList(0, 2, fromUser, "", "", 0, "", false)
+//                        imMessageList?.fromUser = fromUser
+//                        imMessageList?.gmtCreate = DateUtil.stamp2Date(System.currentTimeMillis())
+//                        imMessageList?.messageType = dataClassReceiver?.messageType
+//                        imMessageList?.message = dataClassReceiver?.messageContent
+//                        if (dataClassReceiver?.messageType == 2){
+//                            imageList.value?.add(dataClassReceiver?.messageContent!!)
+//                        }
+//                        receiverList.value?.add(0, imMessageList!!)
+//                        fromUser = null
+//                        imMessageList = null
+//                    }
+//                }
 //
-//                        if (!shp?.getToken().equals("")){
+//                dataClassReceiverList.value?.add(dataClassReceiver!!)
+//                Log.d(TAG, "receiverCount:${dataClassReceiverList.value} ")
+//            }
+//            CoroutineScope(Dispatchers.Main).launch {
+//                if (dataClassReceiverList.value!!.size > 0){
+//                    Log.d(TAG, "receiverCount:收到消息receiverCount+1 = ${receiverCount.value!! + 1} ")
+//                    Log.d(TAG, "receiverCount:getAppStatus ${getAppStatus()} ")
+//                    if (shp!!.getUid() != dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserId){
+//                        if (getAppStatus() == true ){
+//                            if (!shp?.getToken().equals("")){
+//                                if (ToolUtils.isSilentMode(ctx!!).equals("normal")){
 //
+//                                    ToolUtils.defaultMediaPlayer(ctx!!)
+//                                    ToolUtils.playVibrate(ctx!!,false)
+//                                }else if (ToolUtils.isSilentMode(ctx!!).equals("vibrate")){
+//                                    Log.d("TAG", "appstatus vibrate: ")
+//                                    ToolUtils.playVibrate(ctx!!,false)
+//                                }
+//                            }
 //
-//                            Log.d(TAG, "type:$type ")
-//                            ToastUtil.showToast(ctx!!,content!!)
-//                            NotificationUtil.notification("八戒睡眠管理端",name!!,type!!,content!!,ctx!!)
-////                            NotificationUtil.notification2(ctx!!,content)
+//                        }else {
+//                            if (!shp?.getToken().equals("")){
+//
+//                                val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
+//                                val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
+//                                val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
+//                                Log.d(TAG, "type:$type ")
+//                                ToastUtil.showToast(ctx!!,content!!)
+//                                NotificationUtil.notification("八戒睡眠管理端",name!!,type!!,content!!,ctx!!)
+//                            }
+//
 //
 //                        }
-
-
-                    }
-
-
-                    receiverCount.value = receiverCount.value!! + 1
-                }
-
-            }
-        }catch (e:Exception){
-            Log.d(TAG, "receiverCount 没走下去$e ")
-        }
-
-
-
-    }// 收到消息，遍历消息队列，解析和显示。
+////                        val name = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].fromUserName
+////                        val type = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageType
+////                        val content = dataClassReceiverList.value!![dataClassReceiverList.value!!.size-1].messageContent
+////
+////                        if (!shp?.getToken().equals("")){
+////
+////
+////                            Log.d(TAG, "type:$type ")
+////                            ToastUtil.showToast(ctx!!,content!!)
+////                            NotificationUtil.notification("八戒睡眠管理端",name!!,type!!,content!!,ctx!!)
+//////                            NotificationUtil.notification2(ctx!!,content)
+////
+////                        }
+//
+//
+//                    }
+//
+//
+//                    receiverCount.value = receiverCount.value!! + 1
+//                }
+//
+//            }
+//        }catch (e:Exception){
+//            Log.d(TAG, "receiverCount 没走下去$e ")
+//        }
+//
+//
+//
+//    }// 收到消息，遍历消息队列，解析和显示。
 
     //监听群组回调
     val groupAcceptInvitation = MutableLiveData(0)
-    var groupListener = object : EMGroupChangeListener{
-        override fun onInvitationReceived(
-            groupId: String?,
-            groupName: String?,
-            inviter: String?,
-            reason: String?
-        ) {
-            Log.d(TAG, "onInvitationReceived: ")
-        }
-
-        override fun onRequestToJoinReceived(
-            groupId: String?,
-            groupName: String?,
-            applicant: String?,
-            reason: String?
-        ) {
-            Log.d(TAG, "onRequestToJoinReceived: ")
-        }
-
-        override fun onRequestToJoinAccepted(
-            groupId: String?,
-            groupName: String?,
-            accepter: String?
-        ) {
-            Log.d(TAG, "onRequestToJoinAccepted: ")
-        }
-
-        override fun onRequestToJoinDeclined(
-            groupId: String?,
-            groupName: String?,
-            decliner: String?,
-            reason: String?
-        ) {
-            Log.d(TAG, "onRequestToJoinDeclined: ")
-        }
-
-        override fun onInvitationAccepted(groupId: String?, invitee: String?, reason: String?) {
-            Log.d(TAG, "onInvitationAccepted: ")
-        }
-
-        override fun onInvitationDeclined(groupId: String?, invitee: String?, reason: String?) {
-            Log.d(TAG, "onInvitationDeclined: ")
-        }
-
-        override fun onUserRemoved(groupId: String?, groupName: String?) {
-            Log.d(TAG, "onUserRemoved: ")
-        }
-
-        override fun onGroupDestroyed(groupId: String?, groupName: String?) {
-            Log.d(TAG, "onGroupDestroyed: ")
-        }
-
-        override fun onAutoAcceptInvitationFromGroup(
-            groupId: String?,
-            inviter: String?,
-            inviteMessage: String?
-        ) {
-
-            //收到邀请 去刷新列表
-            CoroutineScope(Dispatchers.Main).launch {
-                Log.d(TAG, "onAutoAcceptInvitationFromGroup: ")
-                groupAcceptInvitation.value = 1
-            }
-
-
-        }
-
-        override fun onMuteListAdded(
-            groupId: String?,
-            mutes: MutableList<String>?,
-            muteExpire: Long
-        ) {
-            Log.d(TAG, "onMuteListAdded: ")
-        }
-
-        override fun onMuteListRemoved(groupId: String?, mutes: MutableList<String>?) {
-            Log.d(TAG, "onMuteListRemoved: ")
-        }
-
-        override fun onWhiteListAdded(groupId: String?, whitelist: MutableList<String>?) {
-            Log.d(TAG, "onWhiteListAdded: ")
-        }
-
-        override fun onWhiteListRemoved(groupId: String?, whitelist: MutableList<String>?) {
-            Log.d(TAG, "onWhiteListRemoved: ")
-        }
-
-        override fun onAllMemberMuteStateChanged(groupId: String?, isMuted: Boolean) {
-            Log.d(TAG, "onAllMemberMuteStateChanged: ")
-        }
-
-        override fun onAdminAdded(groupId: String?, administrator: String?) {
-            Log.d(TAG, "onAdminAdded: ")
-        }
-
-        override fun onAdminRemoved(groupId: String?, administrator: String?) {
-            Log.d(TAG, "onAdminRemoved: ")
-        }
-
-        override fun onOwnerChanged(groupId: String?, newOwner: String?, oldOwner: String?) {
-            Log.d(TAG, "onOwnerChanged: ")
-        }
-
-        override fun onMemberJoined(groupId: String?, member: String?) {
-            Log.d(TAG, "onMemberJoined: ")
-        }
-
-        override fun onMemberExited(groupId: String?, member: String?) {
-            Log.d(TAG, "onMemberExited: ")
-        }
-
-        override fun onAnnouncementChanged(groupId: String?, announcement: String?) {
-            Log.d(TAG, "onAnnouncementChanged: ")
-        }
-
-        override fun onSharedFileAdded(groupId: String?, sharedFile: EMMucSharedFile?) {
-            Log.d(TAG, "onSharedFileAdded: ")
-        }
-
-        override fun onSharedFileDeleted(groupId: String?, fileId: String?) {
-            Log.d(TAG, "onSharedFileDeleted: ")
-        }
-    }
-
-
-    val connectionListener = object : EMConnectionListener {
-        override fun onConnected() {
-
-        }
-
-        override fun onDisconnected(errorCode: Int) {
-
-        }
-
-        override fun onTokenWillExpire() {
-
-            getImToken()
-
-
-        }
-
-    }
-
 
 
 }

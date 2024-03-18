@@ -57,11 +57,10 @@ class ImConversationListDataSource(private val context: Context):PageKeyedDataSo
                 call: Call<DataClassImConversationList>,
                 response: Response<DataClassImConversationList>
             ) {
-
                 if (response.body()?.code.equals("1")){
                     bodyImConversationList = null
                     val dataList = response.body()?.data?.list
-                    Log.d("sadadasd", "onResponse loadInitial:${response.body()?.data} ")
+
                     dataList?.let { callback.onResult(it,null,2) }
                     _networkStatus.postValue(ImConversationListNetWorkStatus.IM_CONVERSATION_LIST_INITIAL_LOADED)
                     if (response.body()?.data?.boolLastPage == true){

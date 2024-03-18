@@ -15,15 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.work.*
-import com.hyphenate.EMMessageListener
-import com.hyphenate.chat.EMClient
-import com.hyphenate.chat.EMCustomMessageBody
 import com.hzdq.nppvdoctorclient.body.BodyVersion
 import com.hzdq.nppvdoctorclient.chat.ChatViewModel
 import com.hzdq.nppvdoctorclient.databinding.ActivityMainBinding
-import com.hzdq.nppvdoctorclient.dataclass.DataClassReceiver
-import com.hzdq.nppvdoctorclient.dataclass.FromUser
-import com.hzdq.nppvdoctorclient.dataclass.ImMessageList
 import com.hzdq.nppvdoctorclient.fragment.*
 import com.hzdq.nppvdoctorclient.login.LoginActivity
 import com.hzdq.nppvdoctorclient.mine.MineViewModel
@@ -50,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private var serviceFragment: Fragment = ServiceFragment()
     private var patientFragment: Fragment = PatientFragment()
     private var doctorFragment: Fragment = DoctorFragment()
-    private var chatFragment: Fragment = ChatFragment()
     private var mineFragment: Fragment = MineFragment()
     private val fragmentList: MutableList<Fragment> = ArrayList()
     private lateinit var shp: Shp
@@ -65,26 +58,11 @@ class MainActivity : AppCompatActivity() {
     private var updateDialog: UpdateDialog? = null
     private var versionUpdateDialog: VersionUpdateDialog? = null
     private var safeDialog:SafeDialog? = null
-    override fun onStart() {
-
-        Log.d(TAG, "onStart: ")
-        if (shp.getFirstLoginIm()==false){
-            vm.registerListener()
-//            EMClient.getInstance().chatManager().addMessageListener(msgListener);
-
-        }
-        super.onStart()
-    }
 
 
     override fun onDestroy() {
-        if (!shp.getToken().equals("") ){
-            vm.unregisterTimeChange()
-        }
-        if (shp.getFirstLoginIm()==false){
-            vm.unregisterListener()
-//            EMClient.getInstance().chatManager().removeMessageListener(msgListener);
-        }
+
+
         safeDialog?.dismiss()
         tokenDialogUtil?.disMissTokenDialog()
         updateDialog?.dismiss()
@@ -94,14 +72,14 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: ")
+
         ActivityCollector.addActivity(this)
         tokenDialogUtil = TokenDialogUtil(this)
         binding= DataBindingUtil.setContentView(this,R.layout.activity_main)
         shp = Shp(this)
         vm.setContext(applicationContext)
 
-
+        DataCleanManagerKotlin.cleanInternalCache(this)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)  // 网络状态
             .setRequiresBatteryNotLow(true)                 // 不在电量不足时执行
@@ -135,19 +113,12 @@ class MainActivity : AppCompatActivity() {
             safeDialog = null
         }
 
-        if (shp.getFirstLoginIm() == false){
-            vm.initIm()
-            vm.loginIm()
-
-
-
-        }
 
 
 
 
         vm.registerActivityLifecycleCallbacks(application)
-        vm.registerTimeChange()
+
         val intent =intent
 
         if (shp.getToken().equals("")){
@@ -232,7 +203,6 @@ class MainActivity : AppCompatActivity() {
             if (shp.getRoleType() == 3){
                 doctorFragment = supportFragmentManager.getFragment(savedInstanceState, "DoctorFragment")!!
             }
-            chatFragment = supportFragmentManager.getFragment(savedInstanceState, "ChatFragment")!!
 
             mineFragment = supportFragmentManager.getFragment(savedInstanceState, "MineFragment")!!
             addToList(serviceFragment)
@@ -242,13 +212,9 @@ class MainActivity : AppCompatActivity() {
                 addToList(doctorFragment)
 
             }
-            addToList(chatFragment)
             addToList(mineFragment)
         } else {
             initFragment()
-            if (intent.getIntExtra("notification",0) == 1){
-                binding.chatIcon.motion.performClick()
-            }
 
         }
 
@@ -257,14 +223,12 @@ class MainActivity : AppCompatActivity() {
                 serviceFragment to binding.serviceIcon.motion,
                 patientFragment to binding.patientIcon.motion,
                 doctorFragment  to binding.doctorIcon.motion,
-                chatFragment to binding.chatIcon.motion,
                 mineFragment to binding.mineIcon.motion,
             )
         }else {
             destinationMap = mapOf(
                 serviceFragment to binding.serviceIcon.motion,
                 patientFragment to binding.patientIcon.motion,
-                chatFragment to binding.chatIcon.motion,
                 mineFragment to binding.mineIcon.motion,
             )
         }
@@ -276,8 +240,7 @@ class MainActivity : AppCompatActivity() {
         logOut()
         observer()
 
-        vm.getImAppInfo()
-        vm.getImToken()
+
 
 
 
@@ -292,25 +255,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun observer(){
 
-        chatViewModel.chatCountTotal.observe(this, Observer {
-            if (chatViewModel.isChat.value == false){
-                //判断是否在聊天界面
-                if (it > 0){
-                    binding.chatIcon.chatTotalCount.visibility =  View.VISIBLE
-//                if (it > 99){
-//                    binding.chatIcon.chatTotalCount.content.text = "99+"
-//                }else {
-//                    binding.chatIcon.chatTotalCount.content.text = "$it"
-//                }
-                }else {
-                    binding.chatIcon.chatTotalCount.visibility =  View.GONE
-                }
-            }else {
-                binding.chatIcon.chatTotalCount.visibility =  View.GONE
-            }
-
-        })
-
         mainViewModel.netWorkTimeOut.observe(this, Observer {
             when(it){
                 0 -> {binding.networkTimeout.layout.visibility = View.GONE}
@@ -319,48 +263,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        vm.appInfoCode.observe(this, Observer {
-            when(it){
-                0 -> {}
-                1 -> {}
-                else -> {
-                    ToastUtil.showToast(this,vm.appInfoMsg.value)
-                }
-            }
-        })
 
-        vm.imTokenCode.observe(this, Observer {
-            when(it){
-                0 -> {}
-                1 -> {}
-                else -> {
-                    ToastUtil.showToast(this,vm.imTokenMsg.value)
-                }
-            }
-        })
 
         binding.networkTimeout.button.setOnClickListener {
-            if (vm.networkTimeout.value != 0){
-                when(vm.networkTimeout.value){
-                    1 -> {
-                        vm.networkTimeout.value = 0
-                        vm.getImAppInfo()
-                    }
-                    2 -> {
-                        vm.networkTimeout.value = 0
-                        vm.getImToken()
-                    }
-                }
-            }else  {
-                if (mainViewModel.netWorkTimeOut.value == 1){
-                    mainViewModel.netWorkTimeOut.value = 0
-                    mainViewModel.logOut()
-                }else if (mainViewModel.netWorkTimeOut.value == 2){
-                    mainViewModel.netWorkTimeOut.value = 0
-                    mainViewModel.getUserInfo()
-                }
-
+            if (mainViewModel.netWorkTimeOut.value == 1){
+                mainViewModel.netWorkTimeOut.value = 0
+                mainViewModel.logOut()
+            }else if (mainViewModel.netWorkTimeOut.value == 2){
+                mainViewModel.netWorkTimeOut.value = 0
+                mainViewModel.getUserInfo()
             }
+
 
         }
 
@@ -476,29 +389,7 @@ class MainActivity : AppCompatActivity() {
 
         // 获取华为 HMS 推送 token
         HMSPushHelper.getInstance().getHMSToken(this)
-        binding.chatIcon.motion.setOnClickListener {
-            chatViewModel.isChat.value = true
-            binding.chatIcon.chatTotalCount.visibility =  View.GONE
-            chatIcon()
-            //登录环信
-            if (shp.getFirstLoginIm()==true){
-                if (!shp.getAppKey().equals("")){
-                    vm.initIm()
 
-                    vm.loginIm()
-                    vm.registerListener()
-                }
-
-            }
-
-            if (chatFragment == null) {
-
-                chatFragment = ChatFragment()
-                addFragment(chatFragment)
-
-            }
-            showFragment(chatFragment)
-        }
 
         binding.mineIcon.motion.setOnClickListener {
             chatViewModel.isChat.value = false
@@ -527,7 +418,6 @@ class MainActivity : AppCompatActivity() {
         if (shp.getRoleType() == 3){
             addFragment(doctorFragment as DoctorFragment)
         }
-        addFragment(chatFragment as ChatFragment)
         addFragment(mineFragment as MineFragment)
 
     }
@@ -554,13 +444,6 @@ class MainActivity : AppCompatActivity() {
         binding.doctorIcon.motion.transitionToEnd()
     }
 
-    private fun chatIcon(){
-        BarColor.setBarColor(this,"#FFFFFF")
-        destinationMap?.values?.forEach {
-            it.progress = 0f
-        }// 循环设置 layout 状态为初始状态
-        binding.chatIcon.motion.transitionToEnd()
-    }
 
     private fun mineIcon(){
         BarColor.setBarColor(this,"#1FBE99")
@@ -631,9 +514,6 @@ class MainActivity : AppCompatActivity() {
             if (doctorFragment != null) {
                 supportFragmentManager.putFragment(outState!!, "DoctorFragment", doctorFragment)
             }
-        }
-        if (chatFragment != null) {
-            supportFragmentManager.putFragment(outState!!, "ChatFragment", chatFragment)
         }
         if (mineFragment != null) {
             supportFragmentManager.putFragment(outState!!, "MineFragment", mineFragment)

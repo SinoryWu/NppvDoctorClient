@@ -248,7 +248,6 @@ class AddDoctorActivity : AppCompatActivity() {
                     // 根据a-z进行排序
                     Collections.sort(chatViewModel.doctorList.value!!, pinyinComparator)
 //                    chatViewModel.doctorList.value!!.sortedWith(compareBy({ it.pinyin!!.startsWith("#") }, { it.pinyin }))
-//                    Log.d("asdasdasd", "list3:${chatViewModel.doctorList.value} ")
                     doctorListAdapter?.notifyDataSetChanged()
                     doctorListAdapter?.submitList(chatViewModel.doctorList.value)
                     binding.progressbar.visibility = View.GONE

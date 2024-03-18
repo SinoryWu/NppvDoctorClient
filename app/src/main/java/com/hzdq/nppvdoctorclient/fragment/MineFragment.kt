@@ -62,6 +62,9 @@ class MineFragment : Fragment() {
 
             binding.head.setImageResource(R.mipmap.mine_head_doctor)
 
+        }else if (shp.getRoleType() == 7){
+            binding.type.text = "仓库管理"
+            binding.head.setImageResource(R.mipmap.mine_head_bajie)
         }else {
             binding.type.text = "医助"
             binding.head.setImageResource(R.mipmap.mine_head_bajie)

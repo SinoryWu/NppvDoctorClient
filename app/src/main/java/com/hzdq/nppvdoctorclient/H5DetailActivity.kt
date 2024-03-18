@@ -2,9 +2,12 @@ package com.hzdq.nppvdoctorclient
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
+import android.webkit.PermissionRequest
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -28,11 +31,16 @@ class H5DetailActivity : AppCompatActivity() {
     private var popupwindow: PopupWindow? = null
     private var list:List<String>? = null
     private var tokenDialogUtil:TokenDialogUtil? = null
+
     private val launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val code = it.resultCode
         if (code == RESULT_OK){
             setResult(RESULT_OK)
             binding.webView.reload()
+        }else if (it.resultCode == 20){
+            val data = it.data?.getStringExtra("h5data")
+            val js = "javascript:onTransfer({ data: \'$data\'})"
+            binding.webView.evaluateJavascript(js,null)
         }
 
     }
@@ -55,7 +63,12 @@ class H5DetailActivity : AppCompatActivity() {
         binding.head.back.setOnClickListener {
             finish()
         }
-        val path = intent.getStringExtra("path")
+        var path = ""
+        if (intent.getStringExtra("title")!!.equals("扫码")){
+            path = intent.getStringExtra("path").toString() + "?token=${shp.getToken()}"
+        }else {
+            path = intent.getStringExtra("path").toString()
+        }
         val webSettings: WebSettings = binding.webView.getSettings()
 
         webSettings.javaScriptEnabled = true
@@ -66,11 +79,17 @@ class H5DetailActivity : AppCompatActivity() {
         webSettings.setAllowFileAccess(true)
         webSettings.setAppCacheEnabled(true)
         webSettings.setDatabaseEnabled(true)
+        webSettings.allowFileAccessFromFileURLs = true
+        webSettings.allowUniversalAccessFromFileURLs = true
 
         binding.webView.isVerticalScrollBarEnabled = false
+        binding.webView.webChromeClient = object : WebChromeClient() {
+            override fun onPermissionRequest(request: PermissionRequest?) {
+                request?.grant(request.getResources());
+            }
+        }
 
         binding.webView.loadUrl(URLCollection.H5_BASE_URL+path)
-
         binding.head.more.setOnClickListener {
             if (popupwindow == null){
                 initPopupWindowView()
@@ -113,10 +132,16 @@ class H5DetailActivity : AppCompatActivity() {
                 setResult(RESULT_OK)
                 finish()
             }else {
+
                 val dataClassBack = Gson().fromJson(data, DataClassBack::class.java)
                 val intent = Intent()
                 intent.putExtra("h5data",dataClassBack.data)
-                setResult(RESULT_OK,intent)
+
+                if (dataClassBack.path == "/server/updateStatus"){
+                    setResult(20,intent)
+                }else {
+                    setResult(RESULT_OK,intent)
+                }
                 finish()
             }
         }

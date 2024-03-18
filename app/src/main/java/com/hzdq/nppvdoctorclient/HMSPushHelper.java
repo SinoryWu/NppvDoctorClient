@@ -7,8 +7,6 @@ import android.util.Log;
 import com.huawei.agconnect.AGConnectOptionsBuilder;
 import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.common.ApiException;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.util.EMLog;
 
 import java.lang.reflect.Method;
 
@@ -40,10 +38,7 @@ public class HMSPushHelper {
      * 4、服务端识别token过期后刷新token，以onNewToken接口返回。
      */
     public void getHMSToken(Activity activity){
-        // 判断是否启用FCM推送
-        if (EMClient.getInstance().isFCMAvailable()) {
-            return;
-        }
+
         try {
             if(Class.forName("com.huawei.hms.api.HuaweiApiClient") != null){
 
@@ -54,7 +49,6 @@ public class HMSPushHelper {
                 Log.d("HWHMSPush", "getHMSToken: "+buildVersion);
                 //在某些手机上，invoke方法不报错
                 if(!TextUtils.isEmpty(buildVersion)){
-                    EMLog.d("HWHMSPush", "huawei hms push is available!");
                     Log.d("HWHMSPush", "huawei hms push is available!");
                     new Thread() {
                         @Override
@@ -63,37 +57,35 @@ public class HMSPushHelper {
                                 // read from agconnect-services.json
 //                                String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
                                 String appId = new AGConnectOptionsBuilder().build(activity).getString("client/app_id");
-                                EMLog.e("AGConnectOptionsBuilder","appId:"+appId);
+
                                 Log.e("AGConnectOptionsBuilder","appId:"+appId);
                                 // 申请华为推送token
                                 String token = HmsInstanceId.getInstance(activity).getToken(appId, "HCM");
-                                EMLog.d("HWHMSPush", "get huawei hms push token:" + token);
+
                                 Log.d("HWHMSPush", "get huawei hms push token:" + token);
                                 if(token != null && !token.equals("")){
                                     //没有失败回调，假定token失败时token为null
-                                    EMLog.d("HWHMSPush", "register huawei hms push token success token:" + token);
                                     Log.d("HWHMSPush", "register huawei hms push token success token:" + token);
                                     // 上传华为推送token
-                                    EMClient.getInstance().sendHMSPushTokenToServer(token);
+
                                 }else{
-                                    EMLog.e("HWHMSPush", "register huawei hms push token fail!");
+
                                     Log.e("HWHMSPush", "register huawei hms push token fail!");
                                 }
                             } catch (ApiException e) {
-                                EMLog.e("HWHMSPush","get huawei hms push token failed, " + e);
+
                             }
                         }
                     }.start();
                 }else{
-                    EMLog.d("HWHMSPush", "huawei hms push is unavailable!");
+
                     Log.d("HWHMSPush", "huawei hms push is unavailable!");
                 }
             }else{
-                EMLog.d("HWHMSPush", "no huawei hms push sdk or mobile is not a huawei phone");
+
                 Log.d("HWHMSPush", "no huawei hms push sdk or mobile is not a huawei phone");
             }
         } catch (Exception e) {
-            EMLog.d("HWHMSPush", "no huawei hms push sdk or mobile is not a huawei phone");
             Log.d("HWHMSPush", "no huawei hms push sdk or mobile is not a huawei phone");
         }
     }

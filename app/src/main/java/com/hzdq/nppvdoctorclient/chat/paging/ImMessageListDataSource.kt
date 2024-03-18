@@ -99,7 +99,7 @@ class ImMessageListDataSource(private val context: Context):PageKeyedDataSource<
         })
     }
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ImMessageList>) {
-        Log.d("sadadasd", "onResponse:loadAfter ")
+
         retry = null
         bodyImMessageList.groupId = shp.getGroupId()
         bodyImMessageList.index = index
@@ -111,7 +111,7 @@ class ImMessageListDataSource(private val context: Context):PageKeyedDataSource<
             ) {
                 try {
                     if(response.body()?.code.equals("1")){
-                        Log.d("sadadasd", "onResponse loadAfter:${response.body()?.data?.list?.size} ")
+
 
                         var dataList = response.body()?.data?.list
                         if (dataList?.size== 0){
@@ -128,7 +128,7 @@ class ImMessageListDataSource(private val context: Context):PageKeyedDataSource<
                             dataList[dataList.size-1].id?.let { index = it }
 
                         }
-                        Log.d("sadadasd", "index loadAfter:${index} ")
+
                         _networkStatus.postValue(ImMessageListNetWorkStatus.IM_MESSAGE_LIST_LOADED) //网络加载状态为加载完成
 //                        if (response.body()?.data?.boolLastPage == true){
 //                            _networkStatus.postValue(ImMessageListNetWorkStatus.IM_MESSAGE_LIST_COMPLETED)

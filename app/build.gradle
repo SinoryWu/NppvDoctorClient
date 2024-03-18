@@ -14,8 +14,9 @@ android {
         applicationId "com.hzdq.nppvdoctorclient"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 1
-        versionName "1.0.3"
+        //noinspection HighAppVersionCode
+        versionCode 2024031801
+        versionName "1.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -127,8 +128,6 @@ dependencies {
     implementation 'com.adair.android:okhttp:1.0.2'
     implementation 'com.github.lihangleo2:ShadowLayout:3.2.4'
 
-    //环信IM sdk
-    implementation 'io.hyphenate:hyphenate-chat:4.0.0'
 
 
     // hms push
@@ -136,4 +135,8 @@ dependencies {
 
 
     implementation "androidx.work:work-runtime-ktx:2.7.1"
+
+
+    implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
+    implementation 'com.google.zxing:core:3.3.0'
 }

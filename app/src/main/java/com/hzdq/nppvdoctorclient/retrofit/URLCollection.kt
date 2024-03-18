@@ -11,9 +11,9 @@ class URLCollection {
 
 
 //        val HYBRID_URL  = "http://test-pap-patient-h5.bajiesleep.com?token="
-//        val H5_BASE_URL = "http://test-nppv-assistant-h5.bajiesleep.cn"
+//        val HYBRID_URL  = "https://pap-patient-h5.bajiesleep.com?token="
+//        val H5_BASE_URL = "https://test-nppv-assistant-h5.bajiesleep.cn"
 //        val BASE_URL = "http://test-hx.bajiesleep.com"
-        val HYBRID_URL  = "https://pap-patient-h5.bajiesleep.com?token="
         val H5_BASE_URL = "https://nppv-assistant-h5.bajiesleep.cn"
         val BASE_URL = "https://pap.bajiesleep.com"
 
